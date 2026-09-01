@@ -1,7 +1,7 @@
 add_executable(aria2c main.cc)
 
 list(APPEND srcs A2STR.cc; AbstractAuthResolver.cc; AbstractCommand.cc; )
-list(APPEND heds A2STR.h;  AbstractAuthResolver.h;  AbstractCommand.h;  a2algo.h; a2io.h; a2iterator.h; a2netcompat.h; a2time.h; )
+list(APPEND hedrs A2STR.h;  AbstractAuthResolver.h;  AbstractCommand.h;  a2algo.h; a2io.h; a2iterator.h; a2netcompat.h; a2time.h; )
 
 list(APPEND srcs
     a2algo.h;
@@ -291,7 +291,7 @@ if(ENABLE_WEBSOCKET)
     )
 endif()
 
-if(NOT ENABLE_WEBSOCKET)
+if(NOT ENABLE_WEBSOCKET)  # TODOm: check here the negative
     list(APPEND srcs
         NullWebSocketSessionMan.h
     )
@@ -429,7 +429,7 @@ if(HAVE_OPENSSL)
         LibsslDHKeyExchange.cc; LibsslDHKeyExchange.h;
     )
 
-    if(NOT HAVE_APPLETLS)
+    if(NOT HAVE_APPLETLS)  # TODOm: check here the negative
         list(APPEND srcs
             LibsslTLSContext.cc; LibsslTLSContext.h;
             LibsslTLSSession.cc; LibsslTLSSession.h;
@@ -770,20 +770,19 @@ if(ENABLE_LIBARIA2)
 		RUNTIME DESTINATION ${CMAKE_INSTALl_BINDIR}
 	)
 
-	# TODOm: recheck the below code, and instead keep the above one
-	configure_file(
-		libaria2.pc.in
-		${CMAKE_CURRENT_BINARY_DIR}/libaria2.pc
-		@ONLY
-	)
+	# # TODOm: recheck the below code, and instead keep the above one
+	# configure_file(
+	# 	libaria2.pc.in
+	# 	${CMAKE_CURRENT_BINARY_DIR}/libaria2.pc
+	# 	@ONLY
+	# )
 
-	install(
-		FILES ${CMAKE_CURRENT_BINARY_DIR}/libaria2.pc
-		DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig
-	)
+	# install(
+	# 	FILES ${CMAKE_CURRENT_BINARY_DIR}/libaria2.pc
+	# 	DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig
+	# )
+	
 endif()
-
-
 
 target_include_directories(aria2c PRIVATE
 	${PROJECT_SOURCE_DIR}/lib
