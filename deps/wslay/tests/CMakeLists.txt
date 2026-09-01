@@ -18,10 +18,11 @@ if(HAVE_CUNIT)
 	            wslay_queue_test.h
     )
 
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g O2")
+    string(APPEND CMAKE_C_FLAGS " -Wall -g -O2")
 
     target_link_libraries(main PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR}/lib/libwslay.la -lcunit
+        ${CMAKE_CURRENT_BINARY_DIR}/../lib/libwslay.so
+        ${CUNIT_LIBRARIES}
     )
 
     target_include_directories(main PRIVATE

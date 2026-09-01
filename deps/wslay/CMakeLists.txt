@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 
-project(wslay VERSION 1.1.1 LANGUAGES CXX)
+project(wslay VERSION 1.1.1 LANGUAGES CXX C)
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+# list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake")
 message("The CMAKE_MODULE_PATH has the value of ${CMAKE_MODULE_PATH}")
 
 include(Helpers)
@@ -29,12 +30,8 @@ if(NETTLE_FOUND)
     set(have_nettle TRUE)
 endif()
 
-pkg_check_modules(CUNIT REQUIRED "cunit")
+pkg_check_modules(CUNIT "cunit")
 
-message("The cunit libraries are ${CUNIT_LIBRARIES}")
-message("The cunit include dirs are ${CUNIT_INCLUDE_DIRS}")
-
-#string(APPEND CMAKE_REQUIRED_INCLUDES " ${CUNIT_INCLUDE_DIRS}")
 string(APPEND CMAKE_REQUIRED_LIBRARIES " ${CUNIT_LIBRARIES}")
 check_cxx_symbol_exists(CU_initialize_registry "TestDB.h" have_cunit)
 
@@ -93,8 +90,6 @@ if(NOT HAVE_HTONS)
     message(WARNING "The htons was NOT found")
 endif()
 
-message(STATUS "The message of CMAKE_SYSTEM_NAME is ${CMAKE_SYSTEM_NAME}")
-
 set(build_examples FALSE)
 if(have_nettle)
 	if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -103,17 +98,13 @@ if(have_nettle)
 endif()
 
 set(ENABLE_EXAMPLES ${build_examples})
-message("The build_examples has the value of ${build_examples}")
-message("and the ENABLE_EXAMPLES has the value of ${ENABLE_EXAMPLES}")
 
 # TODOm: add the AC_CONFIG_FILES() command from the autotools
-set(PACKAGE_VERSION ${PROJECT_VERSION})  # TODOm: check the PROJECT_VERSION is equal to 1.1.1 of the library
+set(PACKAGE_VERSION ${PROJECT_VERSION})
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/lib/includes/wslay/wslayver.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/lib/includes/wslay/wslayver.h" @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/lib/libwslay.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/lib/libwslay.pc" @ONLY)
 
 add_subdirectory(lib)
-add_subdirectory(tests)
-
 include(tests/CPunit.cmake)
 
 message(STATUS "Summary of build options:")
@@ -127,7 +118,7 @@ string(APPEND printKeys "\
 	CUnit;\
 	Nettle;\
 	Build examples"
-	)
+)
 
 string(APPEND printValues "\
 	${PROJECT_VERSION};\

@@ -769,7 +769,7 @@ endif()
 
 if(HAVE_KQUEUE)   #TODOm: should added to config.h
 	list(APPEND srcs
-		KqueueEventPoll.cc; KqueueEventPoll.include
+		KqueueEventPoll.cc; KqueueEventPoll.h
 	)
 endif()
 
