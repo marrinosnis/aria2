@@ -21,3 +21,32 @@ function(spaceIdentation value)
 
 	return(PROPAGATE spaces)
 endfunction()
+
+
+# custom function, that creates config.h file at CMAKE_BUILD_BINARY_DIR that contains the definitions
+# from CMakeLists.txt files
+# try to imitate in a nice way the AC_CONFIG_HEADERS() from autotools build tool
+function(writeToConfigFile definition value message)
+    set(content [==[
+/* @message@ */
+]==])
+
+    if(value)
+        set(content_p [==[
+#define @definition@ @value@
+
+]==])
+        string(APPEND content "${content_p}")
+        string(CONFIGURE "${content}" content @ONLY)
+    else()
+        set(content_p [==[
+/* #undef @definition@ */
+
+]==])
+        string(APPEND content "${content_p}")
+        string(CONFIGURE "${content}" content @ONLY)
+    endif()
+
+        file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/config.h" ${content})
+
+endfunction()
