@@ -427,7 +427,7 @@ if(openssl)
 
         set(save_LIBS "${CMAKE_REQUIRED_LIBRARIES}")
         string(APPEND CMAKE_REQUIRED_LIBRARIES " ${OpenSSL_LIBRARIES}")
-        
+
         check_symbol_exists(EVP_DigestInit_ex "openssl/evp.h" have_digestinit_ex)
         if(have_digestinit_ex)
             # add_compile_definitions(HAVE_OLD_OPENSSL=1)  # TODOm: remove this one
@@ -712,7 +712,6 @@ endif()
 if(CMAKE_HOST_SOLARIS)
 
     set(save_LIBS "${CMAKE_REQUIRED_LIBS}")
-
     # TODOm: should recheck the below case that is for solaris OS
     # case "$host" in
     # *solaris*)
@@ -1432,31 +1431,36 @@ endif()
 # AC_SUBST([EXTRALDFLAGS])
 # AC_SUBST([EXTRALIBS])
 
-set(save_CXXFLAGS "${CXXFLAGS}")
+set(save_CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 # I should check this, with foreach() loop, in the test project I have
 if(werror)
-    include(CheckCompilerFlags)
+    include(CheckCompilerFlag)
     check_compiler_flag(CXX -Wall HAVE_WALL_FLAG)
     check_compiler_flag(CXX -Werror HAVE_WERROR_FLAG)
     check_compiler_flag(CXX -Wformat-security HAVE_FORMAT_SECURITY)
 
     if(HAVE_WALL_FLAG)
-        string(APPEND CXXFLAGS " -Wall")
+        string(APPEND CMAKE_CXX_FLAGS " -Wall")
     endif()
 
     if(HAVE_WERROR_FLAG)
-        string(APPEND CXXFLAGS " -Werror")
+        string(APPEND CMAKE_CXX_FLAGS " -Werror")
     endif()
 
     if(HAVE_FORMAT_SECURITY)
-        string(APPEND CXXFLAGS " -Wformat-security")
+        string(APPEND CMAKE_CXX_FLAGS " -Wformat-security")
     endif()
 
 endif()
 
-string(APPEND WARNCXXFLAGS " ${CXXFLAGS}")
+string(APPEND WARNCXXFLAGS " ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${save_CMAKE_CXX_FLAGS}")
 
-set(CXXFLAGS "${save_CXXFLAGS}")
+# Remove possible spaces at the begin - end - and in the middle of the flags
+# when assemble the variables into one. This way we avoid compile error: recipe commences before first target. Stop
+string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src/)
 message("")
@@ -1470,7 +1474,7 @@ Install prefix;\
 CC;\
 CXX;\
 CPP;\
-CXXFLAGS;\
+CMAKE_CXX_FLAGS;\
 CFLAGS;\
 CPPFLAGS;\
 LDFLAGS;\
@@ -1512,14 +1516,14 @@ Tcmalloc;\
 Static Build")
 
 string(APPEND printValues "\
+${CMAKE_BUILD_TYPE};\
 ${CMAKE_HOST_SYSTEM_NAME};\
 ${CMAKE_SYSTEM_NAME};\
-unknown_value;\
 ${CMAKE_INSTALL_PREFIX};\
 ${CC};\
 ${CXX};\
 ${CPP};\
-${CXXFLAGS};\
+${CMAKE_CXX_FLAGS};\
 ${CFLAGS};\
 ${CPPFLAGS};\
 ${LDFLAGS};\
