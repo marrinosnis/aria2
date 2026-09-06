@@ -39,8 +39,6 @@
 
 #include <vector>
 
-#include <stddef.h>
-
 namespace aria2 {
 
 class BitfieldMan {
