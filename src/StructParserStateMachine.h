@@ -36,6 +36,7 @@
 #define D_STRUCT_PARSER_STATE_MACHINE_H
 
 #include "common.h"
+#include <stddef.h>
 
 namespace aria2 {
 

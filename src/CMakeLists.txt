@@ -3,6 +3,32 @@ add_executable(aria2c main.cc)
 list(APPEND srcs A2STR.cc; AbstractAuthResolver.cc; AbstractCommand.cc; )
 list(APPEND hedrs A2STR.h;  AbstractAuthResolver.h;  AbstractCommand.h;  a2algo.h; a2io.h; a2iterator.h; a2netcompat.h; a2time.h; )
 
+# TODOm: recheck the target compile definitions, as it should be founded from the config.h file.
+# TODOm: should be declared here
+
+
+add_compile_definitions(HAVE_CONFIG_H=1)
+
+target_compile_definitions(aria2c PRIVATE
+	HAVE_GETTIMEOFDAY=1
+	HAVE_SYS_SOCKET_H=1
+	HAVE_NETINET_IN_H=1
+	HAVE_INTTYPES_H=1
+	HAVE_STDINT_H=1
+)
+
+target_include_directories(aria2c PRIVATE
+	${PROJECT_SOURCE_DIR}/lib
+	${PROJECT_SOURCE_DIR}/intl
+	${CMAKE_CURRENT_SOURCE_DIR}/includes
+	${CMAKE_CURRENT_SOURCE_DIR}
+
+	${PROJECT_BINARY_DIR}
+	${PROJECT_BINARY_DIR}/includes
+
+	"/usr/include/kqueue"  # TODOm: recheck this path, that there is no other way to add the given path
+)
+
 list(APPEND srcs
     a2algo.h;
 	a2functional.h;
@@ -681,19 +707,19 @@ if(NOT HAVE_ASCTIME_R)
     )
 endif()
 
-if(NOT HAVE_BASENAME)
+if(NOT HAVE_BASENAME)  #TODOm: should added to config.h
     list(APPEND srcs
        libgen.c; libgen.h
     )
 endif()
 
-if(NOT HAVE_GETADDRINFO)
+if(NOT HAVE_GETADDRINFO)  #TODOm: should added to config.h
     list(APPEND srcs
         getaddrinfo.c; getaddrinfo.h
     )
 endif()
 
-if(NOT HAVE_GAI_STRERROR)
+if(NOT HAVE_GAI_STRERROR)   #TODOm: should added to config.h
     list(APPEND srcs
         gai_strerror.c; gai_strerror.h
     )
@@ -711,37 +737,37 @@ if(NOT HAVE_LOCALTIME_R)
     )
 endif()
 
-if(NOT HAVE_STRPTIME)
+if(NOT HAVE_STRPTIME)   #TODOm: should added to config.h
     list(APPEND srcs
         strptime.c; strptime.h
     )
 endif()
 
-if(NOT HAVE_TIMEGM)
+if(NOT HAVE_TIMEGM)   #TODOm: should added to config.h
     list(APPEND srcs
         timegm.c; timegm.h
     )
 endif()
 
-if(NOT HAVE_DAEMON)
+if(NOT HAVE_DAEMON)   #TODOm: should added to config.h
     list(APPEND srcs
         daemon.cc; daemon.h
     )
 endif()
 
-if(HAVE_POLL)
+if(HAVE_POLL)   #TODOm: should added to config.h
     list(APPEND srcs
         PollEventPoll.cc; PollEventPoll.h
     )
 endif()
 
-if(HAVE_PORT_ASSOCIATE)
+if(HAVE_PORT_ASSOCIATE)   #TODOm: should added to config.h
     list(APPEND srcs
         PortEventPoll.cc; PortEventPoll.h
     )
 endif()
 
-if(HAVE_KQUEUE)
+if(HAVE_KQUEUE)   #TODOm: should added to config.h
 	list(APPEND srcs
 		KqueueEventPoll.cc; KqueueEventPoll.include
 	)
@@ -784,12 +810,16 @@ if(ENABLE_LIBARIA2)
 	
 endif()
 
-target_include_directories(aria2c PRIVATE
-	${PROJECT_SOURCE_DIR}/lib
-	${PROJECT_SOURCE_DIR}/intl
-	${CMAKE_CURRENT_LIST_DIR}/../includes/
-	${PROJECT_BINARY_DIR}/includes
-)
+# target_include_directories(aria2c PRIVATE
+# 	${PROJECT_SOURCE_DIR}/lib
+# 	${PROJECT_SOURCE_DIR}/intl
+# 	${CMAKE_CURRENT_SOURCE_DIR}/includes
+
+# 	${PROJECT_BINARY_DIR}
+# 	${PROJECT_BINARY_DIR}/includes
+
+# 	"/usr/include/kqueue"  # TODOm: recheck this path, that there is no other way to add the given path
+# )
 
 target_compile_definitions(aria2c PRIVATE
 	LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}"
@@ -864,11 +894,14 @@ endif()
 set(CMAKE_C_FLAGS "${EXTRACFLAGS}")
 
 string(APPEND CMAKE_CXX_FLAGS
-	"${WARNCXXFLAGS}
-	${CXX1XCXXFLAGS}
-	${EXTRACXXFLAGS}
+    "${WARNCXXFLAGS}
+	 ${CXX1XCXXFLAGS}
+	 ${EXTRACXXFLAGS}
 	"
 )
+
+string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
 
 target_sources(aria2c
     PUBLIC

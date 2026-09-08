@@ -117,7 +117,7 @@ else()
     message(FATAL_ERROR "Cannot find pkg-config tool. Try installing it first")
 endif()
 
-message("Checking whether the C++ compiler supports nullptr")
+message("Whether the C++ compiler supports nullptr")
 set(nullptrTest
     [==[
         #include <iostream>
@@ -204,7 +204,7 @@ if(libz)
         add_compile_definitions(HAVE_ZLIB=1)
         set(save_LIBS "${CMAKE_REQUIRED_LIBRARIES}")
         set(CMAKE_REQUIRED_LIBRARIES "${ZLIB_LIBRARIES} ${CMAKE_REQUIRED_LIBRARIES}")
-        check_symbol_exists(gzbuffer "zlib.h" HAVE_GZBUFFER)
+        check_symbol_exists(gzbuffer "zlib.h" HAVE_GZBUFFER)  # TODOm: gzsetparams function ? Should also check this one
         if(HAVE_GZBUFFER)
             message("The gzbuffer found")
         endif()
@@ -692,6 +692,36 @@ list(APPEND HEADER_FILES argz.h; arpa/inet.h; fcntl.h; float.h; inttypes.h; lang
 
 check_include_files("${HEADER_FILES}" HAVE_HEADER_FILES)
 
+check_include_file(poll.h HAVE_POLL_HEADER)
+if(HAVE_POLL_HEADER)
+    writeToConfigFile(HAVE_POLL_H 1 "Define to 1 if you have the <poll.h> header file.")
+endif()
+
+check_include_file(netinet/in.h HAVE_NETINET_IN_HEADER)
+if(HAVE_NETINET_IN_HEADER)
+    writeToConfigFile(HAVE_NETINET_IN_H 1 "Define to 1 if you have the <netinet/in.h> header file.")
+endif()
+
+check_include_file(sys/socket.h HAVE_SYS_SOCKET_HEADER)
+if(HAVE_SYS_SOCKET_HEADER)
+    writeToConfigFile(HAVE_SYS_SOCKET_H 1 "Define to 1 if you have the <sys/socket.h> header file.")
+endif()
+
+check_include_file(inttypes.h HAVE_INTTYPES_HEADER)
+if(HAVE_INTTYPES_HEADER)
+    writeToConfigFile(HAVE_INTTYPES_H 1 "Define to 1 if you have the <inttypes.h> header file.")
+endif()
+
+check_include_file(stdint.h HAVE_STDINT_HEADER)
+if(HAVE_STDINT_HEADER)
+    writeToConfigFile(HAVE_STDINT_H 1 "Define to 1 if you have the <stdint.h> header file.")
+endif()
+
+check_include_file(stddef.h HAVE_STDDEF)
+if(HAVE_STDDEF)
+    writeToConfigFile(HAVE_STDDEF_H 1 "Define to 1 if you have the <stddef.h> header file.")
+endif()
+
 check_include_file(port.h HAVE_PORT_HEADER)
 if(HAVE_PORT_HEADER)
     add_compile_definitions(HAVE_PORT_H=1)
@@ -731,6 +761,7 @@ find_package(Gettext 0.19)  # apt-get install gettext, if doesn't exist in the s
 find_package(Intl)
 if(NOT Gettext_FOUND OR NOT Intl_FOUND)
     message(WARNING "The gettext or libintl was NOT found: Install it with: sudo apt-get install gettext")
+    # TODOm: check here if I need to put #define into config.h file
 endif()
 
 # verify that libintl.h header exists
@@ -1118,6 +1149,7 @@ set(CPPFLAGS "${save_CPPFLAGS}")
 check_symbol_exists(basename "libgen.h" BASENAME_EXISTS)
 if(BASENAME_EXISTS)
    set(HAVE_BASENAME TRUE)
+   # TODOm: I should add here a HAVE_BASENAME defition
 else()
     set(HAVE_BASENAME FALSE)
 endif()
@@ -1162,6 +1194,7 @@ endif()
 check_symbol_exists(poll "poll.h" POLL_EXISTS)  # at configure.ac, the variable to hold the result is: have_poll
 if(POLL_EXISTS)
     set(HAVE_POLL TRUE)
+    writeToConfigFile(HAVE_POLL 1 "Define to 1 if you have 'poll' function.")
 else()
     set(HAVE_POLL FALSE)
 endif()
