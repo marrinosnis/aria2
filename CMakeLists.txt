@@ -69,7 +69,7 @@ option(gnutls "" FALSE)
 option(libnettle "" FALSE)
 option(libgmp "" FALSE)
 option(libgcrypt "" FALSE)
-option(openssl "" FALSE)
+option(openssl "" TRUE)
 option(sqlite3 "" FALSE)
 option(libxml2 "" FALSE)
 option(libexpat "" FALSE)
@@ -79,7 +79,7 @@ option(tcmalloc "" TRUE)
 option(jemalloc "" FALSE)
 option(libssh2 "" FALSE)
 
-option(ssl "" FALSE)
+option(ssl "" TRUE)
 option(bittorrent "" FALSE)
 option(metalink "" FALSE)
 option(websocket "" FALSE)
@@ -581,7 +581,6 @@ else()
 endif()
 
 if(have_ssl)
-    # add_compile_definitions(ENABLE_SSL=1)
     writeToConfigFile(ENABLE_SSL 1 "Define to 1 if ssl support is enabled.")
     set(ENABLE_SSL TRUE)
 else()
@@ -745,14 +744,33 @@ if(HAVE_ALLOCA_FUNC)
 	message("The alloca() was found")
 endif()
 
-
 list(APPEND HEADER_FILES argz.h; arpa/inet.h; fcntl.h; float.h; langinfo.h; libintl.h; limits.h; locale.h; malloc.h;
-                        netdb.h; netinet/in.h; netinet/tcp.h; poll.h; signal.h; stddef.h; stdint.h; stdio_ext.h;
-                        stdlib.h; string.h; strings.h; sys/ioctl.h; sys/param.h; sys/resource.h; sys/signal.h; sys/time.h; sys/types.h; sys/uio.h; sys/utsname.h;
+                        netdb.h; netinet/tcp.h; stdio_ext.h;
+                        stdlib.h; string.h; strings.h; sys/ioctl.h; sys/param.h; sys/resource.h; sys/signal.h; sys/time.h; sys/uio.h; sys/utsname.h;
                         termios.h; unistd.h; utime.h; wchar.h; ifaddrs.h; pwd.h
 )
 
 check_include_files("${HEADER_FILES}" HAVE_HEADER_FILES)
+
+check_include_file(netdb.h HAVE_NETDB_HEADER)
+if(HAVE_NETDB_HEADER)
+    writeToConfigFile(HAVE_NETDB_H 1 "Define to 1 if you have the <netdb.h> header file.")
+endif()
+
+check_include_file(netinet/tcp.h HAVE_NETINET_TCP_HEADER)
+if(HAVE_NETINET_TCP_HEADER)
+    writeToConfigFile(HAVE_NETINET_TCP_H 1 "Define to 1 if you have the <netinet/tcp.h> header file.")
+endif()
+
+check_include_file(signal.h HAVE_SIGNAL_HEADER)
+if(HAVE_SIGNAL_HEADER)
+    writeToConfigFile(HAVE_SIGNAL_H 1 "Define to 1 if you have <signal.h> header file")
+endif()
+
+check_include_file(sys/types.h HAVE_SYS_TYPES_HEADER)
+if(HAVE_SYS_TYPES_HEADER)
+    writeToConfigFile(HAVE_SYS_TYPES_H 1 "Define to 1 if tou have the <sys/types.h> header file")
+endif()
 
 check_include_file(poll.h HAVE_POLL_HEADER)
 if(HAVE_POLL_HEADER)
@@ -786,7 +804,6 @@ endif()
 
 check_include_file(port.h HAVE_PORT_HEADER)
 if(HAVE_PORT_HEADER)
-    # add_compile_definitions(HAVE_PORT_H=1)   # TODOm: remove this one
     writeToConfigFile(HAVE_PORT_H 1 "Define to 1 if you have the <port.h> header file.")
 endif()
 
@@ -1014,6 +1031,8 @@ endif()
 check_cxx_symbol_exists(sleep "unistd.h" HAVE_SLEEP)
 if(NOT HAVE_SLEEP)
     message(WARNING "The sleep was NOT found")
+else()
+    writeToConfigFile(HAVE_SLEEP 1 "Define to 1 if you have the `sleep' function.")
 endif()
 
 check_cxx_symbol_exists(socket "sys/socket.h" HAVE_SOCKET)
@@ -1084,6 +1103,8 @@ endif()
 check_cxx_symbol_exists(usleep "unistd.h" HAVE_USLEEP)
 if(NOT HAVE_USLEEP)
     message(WARNING "The usleep was NOT found")
+else()
+    writeToConfigFile(HAVE_USLEEP 1 "Define to 1 if you have the `usleep' function.")
 endif()
 
 check_cxx_symbol_exists(utime "utime.h" HAVE_UTIME)
@@ -1231,15 +1252,17 @@ endif()
 
 check_symbol_exists(getaddrinfo "netdb.h" GETADDRINFO_EXISTS)
 if(GETADDRINFO_EXISTS)
-   set(HAVE_GETADDRINFO TRUE)
+    set(HAVE_GETADDRINFO TRUE)
+    writeToConfigFile(HAVE_GETADDRINFO 1 "Define to 1 if you have the 'getaddrinfo' function.")
 else()
     set(HAVE_GETADDRINFO FALSE)
+    writeToConfigFile(HAVE_GETADDRINFO 0 "Define to 1 if you have the 'getaddrinfo' function.")
 endif()
 
 check_symbol_exists(gettimeofday "sys/time.h" GETTIMEOFDAY_EXISTS)
 if(GETTIMEOFDAY_EXISTS)
-   set(HAVE_GETTIMEOFDAY TRUE)
-   writeToConfigFile(HAVE_GETTIMEOFDAY 1 "Define to 1 if you have the `gettimeofday' function.")
+    set(HAVE_GETTIMEOFDAY TRUE)
+    writeToConfigFile(HAVE_GETTIMEOFDAY 1 "Define to 1 if you have the `gettimeofday' function.")
 else()
     set(HAVE_GETTIMEOFDAY FALSE)
     writeToConfigFile(HAVE_GETTIMEOFDAY 0 "Define to 1 if you have the `gettimeofday' function.")
@@ -1248,15 +1271,15 @@ endif()
 set(localStrptimeLocation ${CMAKE_CURRENT_SOURCE_DIR}/src)
 check_symbol_exists(strptime "${localStrptimeLocation}/strptime.h" STRPTIME_EXISTS)
 if(STRPTIME_EXISTS)
-   set(HAVE_STRPTIME TRUE)
+    set(HAVE_STRPTIME TRUE)
 else()
     set(HAVE_STRPTIME FALSE)
 endif()
 
 check_symbol_exists(daemon unistd.h DAEMON_EXISTS)
 if(DAEMON_EXISTS)
-   message("The daemon is present")
-   set(HAVE_DAEMON TRUE)
+    message("The daemon is present")
+    set(HAVE_DAEMON TRUE)
 else()
     set(HAVE_DAEMON FALSE)
 endif()
@@ -1271,9 +1294,7 @@ endif()
 
 if(MINGW)
     set(MINGW_BUILD TRUE)
-
     set(HAVE_GETADDRINFO TRUE)
-
     set(HAVE_GAI_STRERROR FALSE)
 else()
     set(MINGW_BUILD FALSE)
