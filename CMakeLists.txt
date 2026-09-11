@@ -27,6 +27,14 @@ include(CheckCSourceCompiles)
 include(CheckStructHasMember)
 include(CheckFunctionExists)
 
+writeToConfigFile(PACKAGE "\"${PROJECT_NAME}\"" "Name of the package")
+writeToConfigFile(PACKAGE_BUGREPORT "\"https://github.com/aria2/aria2/issues\"" "Define to the address where bug reports for this package should be sent")
+writeToConfigFile(PACKAGE_NAME "\"${PROJECT_NAME}\"" "Define to the full name of this package")
+writeToConfigFile(PACKAGE_STRING "\"${PROJECT_NAME} ${PROJECT_VERSION}\"" "Define to the full name and version of this package")
+writeToConfigFile(PACKAGE_TARNAME "\"${PROJECT_NAME}\"" "Define to the one symbol short name of this package")
+writeToConfigFile(PACKAGE_URL "\"https://aria2.github.io/\"" "Define to the home page for this package")
+writeToConfigFile(PACKAGE_VERSION "\"${PROJECT_VERSION}\"" "Define to the version of this package")
+
 set(EXTRACFLAGS)
 set(EXTRACXXFLAGS)
 set(EXTRACPPFLAGS)
@@ -48,9 +56,9 @@ if(MSVC) # check if the host is about to run in windows with mingw compiler
     string(APPEND EXTRALDFLAGS " -Wl,--dynamicbase -Wl,--nxcompat")
 endif()
 
-writeToConfigFile(BUILD ${CMAKE_BUILD_TYPE} "Define build-type")
-writeToConfigFile(HOST ${CMAKE_HOST_SYSTEM_NAME} "Define host-type")
-writeToConfigFile(TARGET ${CMAKE_SYSTEM_NAME} "Define target-type")
+writeToConfigFile(BUILD "\"${CMAKE_BUILD_TYPE}\"" "Define build-type")
+writeToConfigFile(HOST "\"${CMAKE_HOST_SYSTEM_NAME}\"" "Define host-type")
+writeToConfigFile(TARGET "\"${CMAKE_SYSTEM_NAME}\"" "Define target-type")
 
 add_compile_definitions(HAVE_CONFIG_H=1)
 
