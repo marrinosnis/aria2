@@ -21,11 +21,10 @@ target_include_directories(aria2c PRIVATE
 	${PROJECT_SOURCE_DIR}/lib
 	${PROJECT_SOURCE_DIR}/intl
 	${CMAKE_CURRENT_SOURCE_DIR}/includes
-	${CMAKE_CURRENT_SOURCE_DIR}
 
-	${PROJECT_BINARY_DIR}
 	${PROJECT_BINARY_DIR}/includes
-
+	${PROJECT_BINARY_DIR}
+	"/usr/include/libxml2"
 	"/usr/include/kqueue"  # TODOm: recheck this path, that there is no other way to add the given path
 )
 
@@ -697,7 +696,7 @@ if(ENABLE_METALINK)
 	    MetalinkParserStateV4Impl.cc; MetalinkParserStateV4Impl.h;
 	    MetalinkPostDownloadHandler.cc; MetalinkPostDownloadHandler.h;
 	    MetalinkResource.cc; MetalinkResource.h;
-	    metalink_helper.cc; metalink_helper.;
+	    metalink_helper.cc; metalink_helper.h;
     )
 endif()
 

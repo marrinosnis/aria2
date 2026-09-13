@@ -81,7 +81,7 @@ option(libssh2 "" FALSE)
 
 option(ssl "" TRUE)
 option(bittorrent "" FALSE)
-option(metalink "" FALSE)
+option(metalink "" TRUE)
 option(websocket "" FALSE)
 option(epoll "" FALSE)
 option(libaria2 "" TRUE)
@@ -745,12 +745,21 @@ if(HAVE_ALLOCA_FUNC)
 endif()
 
 list(APPEND HEADER_FILES argz.h; arpa/inet.h; fcntl.h; float.h; langinfo.h; libintl.h; limits.h; locale.h; malloc.h;
-                        netdb.h; netinet/tcp.h; stdio_ext.h;
-                        stdlib.h; string.h; strings.h; sys/ioctl.h; sys/param.h; sys/resource.h; sys/signal.h; sys/time.h; sys/uio.h; sys/utsname.h;
-                        termios.h; unistd.h; utime.h; wchar.h; ifaddrs.h; pwd.h
+                        netdb.h; netinet/tcp.h; stdio_ext.h; stdlib.h; string.h; strings.h; sys/ioctl.h; sys/param.h;
+                        sys/resource.h; sys/signal.h; sys/time.h; sys/utsname.h; termios.h; unistd.h; wchar.h; ifaddrs.h; pwd.h
 )
 
 check_include_files("${HEADER_FILES}" HAVE_HEADER_FILES)
+
+check_include_file(sys/uio.h HAVE_SYS_UIO_HEADER)
+if(HAVE_SYS_UIO_HEADER)
+    writeToConfigFile(HAVE_SYS_UIO_H 1 "Define to 1 if you have the <sys/uio.h> header file.")
+endif()
+
+check_include_file(utime.h HAVE_UTIME_HEADER)
+if(HAVE_UTIME_HEADER)
+    writeToConfigFile(HAVE_UTIME_H 1 "Define to 1 if you have the <utime.h> header file.")
+endif()
 
 check_include_file(netdb.h HAVE_NETDB_HEADER)
 if(HAVE_NETDB_HEADER)
