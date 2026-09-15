@@ -24,8 +24,8 @@ target_include_directories(aria2c PRIVATE
 
 	${PROJECT_BINARY_DIR}/includes
 	${PROJECT_BINARY_DIR}
-	"/usr/include/libxml2"
-	"/usr/include/kqueue"  # TODOm: recheck this path, that there is no other way to add the given path
+	${KQUEUE_INCLUDE_DIRS}
+	"/usr/include/libxml2"  # TODOm: check this path, for the below reason
 )
 
 list(APPEND srcs
@@ -806,7 +806,6 @@ if(ENABLE_LIBARIA2)
 	# 	FILES ${CMAKE_CURRENT_BINARY_DIR}/libaria2.pc
 	# 	DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig
 	# )
-	
 endif()
 
 # target_include_directories(aria2c PRIVATE
@@ -850,29 +849,28 @@ string(APPEND CMAKE_LD_FLAGS
 	"
 )
 
-string(APPEND EXTLDADD
-	"${ALLOCA}
+# The below <LIB>_LIBRARIES variables, come from the ../CMakeLists.txt
+# which are generated automatically from pkg_check_modules() of find_package()
+list(APPEND EXTLDADD
+	${ALLOCA}
 	${EXTRALIBS}
-	${ZLIB_LIBS}
-	${LIBXML2_LIBS}
-	${EXPAT_LIBS}
-	${SQLITE3_LIBS}
+	${ZLIB_LIBRARIES}
+	${LibXml2_LIBRARIES}
+	${EXPAT_LIBRARIES}
+	${SQLite3_LIBRARIES}
 	${WINTLS_LIBS}
-	${LIBGNUTLS_LIBS}
-	${OPENSSL_LIBS}
-	${LIBNETTLE_LIBS}
-	${LIBGMP_LIBS}
+	${GnuTLS_LIBRARIES}
+	${KQUEUE_LIBRARIES}
+	${OpenSSL_LIBRARIES}
+	${LIBNETTLE_LIBRARIES}
+	${GmpLib_LIBRARIES}
 	${LIBGCRYPT_LIBS}
-	${LIBSSH2_LIBS}
-	${LIBCARES_LIBS}
+	${LIBSSH2_LIBRARIES}
+	${LIBCARES_LIBRARIES}
 	${WSLAY_LIBS}
-	${TCMALLOC_LIBS}
-	${JEMALLOC_LIBS}
+	${JEMALLOC_LIBRARIES}
 	${LTLIBINTL}
-	"
 )
-
-string(STRIP ${EXTLDADD} EXTLDADD)
 
 if(ENABLE_LIBARIA2)  # if the aria2 is shared library, first link all the libraries to libaria2
 	add_library(libaria2 INTERFACE)
@@ -899,8 +897,8 @@ string(APPEND CMAKE_CXX_FLAGS
 	"
 )
 
-string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 target_sources(aria2c
     PUBLIC
