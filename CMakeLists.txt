@@ -102,7 +102,6 @@ option(ARIA2_STATIC "Set 'yes' to build a statically linked aria2" FALSE)
 
 option(enable_gnutls_system_crypto_policy "Define to 1 if using gnutls system wide crypto policy" FALSE)
 if(enable_gnutls_system_crypto_policy)
-    # add_compile_definitions(USE_GNUTLS_SYSTEM_CRYPTO_POLICY=1)  # TODOm: remove this
     writeToConfigFile(USE_GNUTLS_SYSTEM_CRYPTO_POLICY 1 "Define to 1 if using gnutls system wide crypto policy")
 endif()
 
@@ -177,9 +176,6 @@ set(overrideTest
 
 check_cxx_source_compiles("${overrideTest}" SUPPORTS_OVERRIDE)
 if(SUPPORTS_OVERRIDE)
-    # message("C++ compiler supports override keyword")
-    # add_compile_definitions(CXX11_OVERRIDE=override)  # TODOm: remove this
-    # message("Define `override` keyword if the compiler supports it")
     writeToConfigFile(CXX11_OVERRIDE "override" "Define `override` keyword if the compiler supports it")
 endif()
 
@@ -222,7 +218,6 @@ if(libz)
 
     if(ZLIB_FOUND)
         set(have_zlib TRUE)
-        # add_compile_definitions(HAVE_ZLIB=1)  # TODOm: remove this
         writeToConfigFile(HAVE_ZLIB 1 "Define to 1 if you have zlib")
 
         set(save_LIBS "${CMAKE_REQUIRED_LIBRARIES}")
@@ -240,7 +235,6 @@ set(have_libuv FALSE)
 if(libuv)
     pkg_check_modules(LIBUV "libuv >= 1.13")
     if(LIBUV_FOUND)
-        # add_compile_definitions(HAVE_LIBUV=1)     # TODOm: remove this one
         writeToConfigFile(HAVE_LIBUV 1 "Define to 1 if you have libuv.")
         set(have_libuv TRUE)
         set(HAVE_LIBUV TRUE)
@@ -256,7 +250,6 @@ if(libxml2)
     pkg_check_modules(LibXml2 "libxml-2.0 >= 2.6.24")  # to install it: sudo apt-get install libxml2-dev
     if(LibXml2_FOUND)
         set(have_libxml2 TRUE)
-        # add_compile_definitions(HAVE_LIBXML2=1)   # TODOm: remove this one
         writeToConfigFile(HAVE_LIBXML2 1 "Define to 1 if you have libxml2.")
     else()
         message(WARNING "ARIA2_DEP_NOT_MET([libxml2]). Install it with: sudo apt-get install libxml2-dev")
@@ -269,7 +262,6 @@ if(libexpat AND NOT ${have_libxml2})
     pkg_check_modules(EXPAT "expat") # to install it: sudo apt-get install libexpat1-dev
     if(EXPAT_FOUND)
         set(have_libexpat TRUE)
-        # add_compile_definitions(HAVE_LIBEXPAT=1)   # TODOm: remove this one
         writeToConfigFile(HAVE_LIBEXPAT 1 "Define to 1 if you have libexpat.")
     else()
         message(WARNING "ARIA2_DEP_NOT_MET([libexpat]). Install it with: sudo apt-get install libexpat1-dev")
@@ -282,7 +274,6 @@ if(sqlite3)
     pkg_check_modules(SQLite3 "sqlite3") # to install it: sudo apt-get install libsqlite3-dev
     if(SQLite3_FOUND)
         set(have_sqlite3 TRUE)
-        # add_compile_definitions(HAVE_SQLITE3=1)   # # TODOm: remove this one
         writeToConfigFile(HAVE_SQLITE3 1 "Define to 1 if you have sqlite3.")
         check_library_exists(${SQLite3_LIBRARIES} sqlite3_open_v2 "" sqlite3FuncFound)
         if(NOT sqlite3FuncFound)
@@ -324,7 +315,6 @@ if(appletls)
     message("Whether to enable Mac OS X native SSL/TLS")
     if(have_osx)
         message("Define to 1 if you have Apple TLS")
-        # add_compile_definitions(HAVE_APPLETLS=1)   #TODOm: remove this one
         writeToConfigFile(HAVE_APPLETLS 1 "Define to 1 if you have Apple TLS")
 
         string(APPEND APPLETLS_LDFLAGS "-framework CoreFoundation -framework Security")
@@ -380,7 +370,6 @@ if(wintls)
     endif()
 
     if(have_wintls_libs AND have_wintls_headers)
-        # add_compile_definitions(SECURITY_WIN32=1)   # TODOm: remove this one
         writeToConfigFile(SECURITY_WIN32 1 "Use security.h in WIN32 mode")
 
         # message("Use security.h in WIN32 mode")
@@ -407,7 +396,6 @@ if(gnutls AND NOT have_ssl)
     endif()
     if(have_libgnutls)
         set(have_ssl TRUE)
-        # add_compile_definitions(HAVE_LIBGNUTLS=1)   # TODOm: remove this one
         writeToConfigFile(HAVE_LIBGNUTLS 1 "Define to 1 if you have libgnutls")
         check_library_exists(${LIBGNUTLS_LIBRARIES} gnutls_certificate_set_x509_system_trust "" gnuTLSFuncFound)
         if(NOT gnuTLSFuncFound)
@@ -429,7 +417,6 @@ if(openssl)
 
     if(have_openssl)
         set(have_ssl TRUE)
-        # add_compile_definitions(HAVE_OPENSSL=1)  # TODOm: remove this one
         writeToConfigFile(HAVE_OPENSSL 1 "Define to 1 if you have openssl.")
 
         set(save_LIBS "${CMAKE_REQUIRED_LIBRARIES}")
@@ -437,9 +424,7 @@ if(openssl)
 
         check_symbol_exists(EVP_DigestInit_ex "openssl/evp.h" have_digestinit_ex)
         if(have_digestinit_ex)
-            # add_compile_definitions(HAVE_OLD_OPENSSL=1)  # TODOm: remove this one
             writeToConfigFile(HAVE_OLD_OPENSSL 1 "Define to 1 if you have old openssl.")
-            # message("Define to 1 if you have old openssl")
         endif()
 
         check_symbol_exists(EVP_sha224 "openssl/evp.h" have_evp_sha224)
@@ -470,7 +455,6 @@ if(NOT have_openssl)
         if(LIBNETTLE_FOUND)
             # message("The libnettle found with version ${LIBNETTLE_VERSION} at path ${LIBNETTLE_INCLUDE_DIRS}")
             set(have_libnettle TRUE)
-            # add_compile_definitions(HAVE_LIBNETTLE=1)   # TODOm: remove this one
             writeToConfigFile(HAVE_LIBNETTLE 1 "Define to 1 if you have libnettle.")
         else()
             message(WARNING "ARIA2_DEP_NOT_MET([nettle]). Install it with: sudo apt-get install nettle-dev")
@@ -486,12 +470,10 @@ if(NOT have_openssl)
             set(LIBGMP_CFLAGS "")
             set(LIBGMP_LIBS "-lgmp")
 
-            # add_compile_definitions(HAVE_LIBGMP=1)   #TODOm: remove this one
             writeToConfigFile(HAVE_LIBGMP 1 "Define to 1 if you have libgmp.")
 
             check_symbol_exists(__gmpz_powm_sec "gmp.h" have_mpz_powm_sec)
             if(have_mpz_powm_sec)
-                # add_compile_definitions(HAVE_GMP_SEC=1)  # TODOm: remove this one
                 writeToConfigFile(HAVE_GMP_SEC 1 "Define to 1 if you have a GMP with sec functions.")
             endif()
 
@@ -527,7 +509,6 @@ if(libssh2)
     pkg_check_modules(LIBSSH2 REQUIRED "libssh2")  # sudo apt-get install libssh2-1-dev
     if(LIBSSH2_FOUND)
         set(have_libssh2 TRUE)
-        # add_compile_definitions(HAVE_LIBSSH2=1)  #TODOm: remove this one
         writeToConfigFile(HAVE_LIBSSH2 1 "Define to 1 if you have libssh2.")
 
         if(ARIA2_STATIC)
@@ -544,7 +525,6 @@ if(libcares)
     pkg_check_modules(LIBCARES "libcares >= 1.16.0")  # sudo apt-get install libc-ares-dev
     if(LIBCARES_FOUND)
             set(have_libcares TRUE)
-            # add_compile_definitions(HAVE_LIBCARES=1)  #TODOm: remove this one
             writeToConfigFile(HAVE_LIBCARES 1 "Define to 1 if you have libcares")
     else()
             message(WARNING "ARIA2_DEP_NOT_MET([libcares). Install it with: sudo apt-get install libc-ares-dev")
@@ -554,27 +534,17 @@ endif()
 set(use_md "")
 if(have_appletls)
     set(use_md "apple")
-    # message("What message digest implementation to use")
-    # add_compile_definitions(USE_APPLE_MD=1)    # TODOm: remove this one
     writeToConfigFile(USE_APPLE_MD 1 "What message digest implementation to use")
 elseif(have_libnettle)
-    # add_compile_definitions(USE_LIBNETTLE_MD=1)    # TODOm: remove this one
-    # message("What message digest implementation to use")
     writeToConfigFile(USE_LIBNETTLE_MD 1 "What message digest implementation to use")
     set(use_md "libnettle")
 elseif(have_libcrypt)
-    # add_compile_definitions(USE_LIBCRYPT_MD=1)
-    # message("What message digest implementation to use")
     writeToConfigFile(USE_LIBCRYPT_MD 1 "What message digest implementation to use")
     set(use_md "libcrypt")
 elseif(have_openssl)
-    # add_compile_definitions(USE_OPENSSL_MD=1)   # TODOm: remove this one
-    # message("What message digest implementation to use")
     writeToConfigFile(USE_OPENSSL_MD 1 "What message digest implementation to use")
     set(use_md "openssl")
 else()
-    # add_compile_definitions(USE_INTERNAL_MD=1)   # TODOm: remove this one
-    # message("What message digest implementation to use")
     writeToConfigFile(USE_INTERNAL_MD 1 "What message digest implementation to use")
     set(use_md "internal")
 endif()
@@ -587,7 +557,7 @@ else()
     set(ENABLE_SSL FALSE)
 endif()
 
-# this can be done more clearly with a list of the variables that I want to check if they
+# TODOm: this can be done more clearly with a list of the variables that I want to check if they
 # are true or false.
 
 if(have_osx)
@@ -636,7 +606,6 @@ endif()
 if(have_libgmp OR have_libgcrypt OR have_openssl)
     set(USE_INTERNAL_BIGNUM FALSE)
 else()
-    # add_compile_definitions(USE_INTERNAL_BIGNUM=1)    # TODOm: remove this one
     writeToConfigFile(USE_INTERNAL_BIGNUM 1 "Define to 1 if internal BIGNUM support is enabled.")
     set(USE_INTERNAL_BIGNUM TRUE)
 endif()
@@ -644,13 +613,11 @@ endif()
 if(have_libnettle OR have_libgcrypt OR have_openssl)
     set(USE_INTERNAL_ARC4 FALSE)
 else()
-    # add_compile_definitions(USE_INTERNAL_ARC4=1)   # TODOm: remove this one
     writeToConfigFile(USE_INTERNAL_ARC4 1 "Define to 1 if internal ARC4 support is enabled.")
     set(USE_INTERNAL_ARC4 TRUE)
 endif()
 
 if(bittorrent)
-    # add_compile_definitions(ENABLE_BITTORRENT=1)  # TODOm: remove this one
     writeToConfigFile(ENABLE_BITTORRENT 1 "Define to 1 if BitTorrent support is enabled.")
     set(ENABLE_BITTORRENT TRUE)
 else()
@@ -662,7 +629,6 @@ else()
 endif()
 
 if((have_libxml2 OR have_libexpat) AND metalink)
-    # add_compile_definitions(ENABLE_METALINK=1)   # TODOm: remove this one
     writeToConfigFile(ENABLE_METALINK 1 "Define to 1 if Metalink support is enabled.")
     set(ENABLE_METALINK TRUE)
 else()
@@ -681,7 +647,6 @@ else()
 endif()
 
 if(enable_xml_rpc)
-    # add_compile_definitions(ENABLE_XML_RPC=1)   # TODOm: remove this one
     writeToConfigFile(ENABLE_XML_RPC 1 "Define to 1 if XML-RPC support is enabled.")
     set(ENABLE_XML_RPC TRUE)
 
@@ -696,7 +661,6 @@ if(have_libexpat)
 endif()
 
 if(have_libcares)
-    # add_compile_definitions(ENABLE_ASYNC_DNS=1)    # TODOm: remove this one
     writeToConfigFile(ENABLE_ASYNC_DNS 1 "Define to 1 if asynchronous DNS support is enabled.")
     set(ENABLE_ASYNC_DNS TRUE)
 else()
@@ -733,7 +697,6 @@ endif()
 check_include_file(alloca.h HAVE_ALLOCA_HEADER)
 if(HAVE_ALLOCA_HEADER)
 	message("The alloca.h exists")
-    # add_compile_definitions(HAVE_ALLOCA_H=1)    # TODOm: remove this one
     writeToConfigFile(HAVE_ALLOCA_H 1 "Define to 1 if <alloca.h> works.")
 endif()
 
@@ -842,7 +805,6 @@ check_struct_has_member(
 )
 
 if(have_timespec)
-    # add_compile_definitions(HAVE_A2_STRUCT_TIMESPEC=1)   # TODOm: remove this one
     writeToConfigFile(HAVE_A2_STRUCT_TIMESPEC 1 "Define to 1 if the system has the type `struct timespec'.")
 endif()
 
@@ -1162,7 +1124,6 @@ set(have_epoll FALSE)
 if(epoll)
     check_symbol_exists(epoll_create "sys/epoll.h" have_epoll)
     if(have_epoll)
-        # add_compile_definitions(HAVE_EPOLL=1)   # TODOm: remove this one
         writeToConfigFile(HAVE_EPOLL 1 "Define to 1 if epoll is available.")
     endif()
 endif()
@@ -1191,7 +1152,6 @@ if(have_fallocate)
 endif()
 
 if(have_posix_fallocate OR have_fallocate OR have_osx OR win_build)
-#    add_compile_definitions(HAVE_SOME_FALLOCATE=1)   # TODOm: remove this one
     writeToConfigFile(HAVE_SOME_FALLOCATE 1 "Define to 1 if *_fallocate is available.")
     set(HAVE_SOME_FALLOCATE TRUE)
 endif()
@@ -1211,9 +1171,7 @@ check_cxx_source_compiles("
 )
 
 if(have_asctime_r)
-    # message("Have asctime_r function")
-    # add_compile_definitions(HAVE_ASCTIME_R=1)    # TODOm: remove this one
-    writeToConfigFile(HAVE_ASCTIME_R 1 "Define to 1 if you have the `asctime_r' function or macro.")
+    writeToConfigFile(HAVE_ASCTIME_R 1 "Define to 1 if you have the 'asctime_r' function or macro.")
     set(HAVE_ASCTIME_R TRUE)
 else()
     message("NOT have asctime_r function")
@@ -1232,8 +1190,6 @@ check_cxx_source_compiles("
     }" have_localtime_r)
 
 if(have_localtime_r)
-    # message("Have localtime_r function")
-    # add_compile_definitions(HAVE_LOCALTIME_R=1) # TODOm: remove this one
     writeToConfigFile(HAVE_LOCALTIME_R 1 "Have localtime_r function.")
     set(HAVE_LOCALTIME_R TRUE)
 else()
@@ -1246,7 +1202,7 @@ set(CPPFLAGS "${save_CPPFLAGS}")
 check_symbol_exists(basename "libgen.h" BASENAME_EXISTS)
 if(BASENAME_EXISTS)
    set(HAVE_BASENAME TRUE)
-   # TODOm: I should add here a HAVE_BASENAME defition
+   writeToConfigFile(HAVE_BASENAME 1 "Define to 1 if you have the 'basename' function.")
 else()
     set(HAVE_BASENAME FALSE)
 endif()
@@ -1254,8 +1210,10 @@ endif()
 check_symbol_exists(gai_strerror "netdb.h" GAI_STRERROR_EXISTS)
 if(GAI_STRERROR_EXISTS)
    set(HAVE_GAI_STRERROR TRUE)
+   writeToConfigFile(HAVE_GAI_STRERROR 1 "Define to 1 if you have the 'gai_strerror' function.")
 else()
     set(HAVE_GAI_STRERROR FALSE)
+    writeToConfigFile(HAVE_GAI_STRERROR 0 "Define to 1 if you have the 'gai_strerror' function.")
 endif()
 
 check_symbol_exists(getaddrinfo "netdb.h" GETADDRINFO_EXISTS)
@@ -1280,8 +1238,10 @@ set(localStrptimeLocation ${CMAKE_CURRENT_SOURCE_DIR}/src)
 check_symbol_exists(strptime "${localStrptimeLocation}/strptime.h" STRPTIME_EXISTS)
 if(STRPTIME_EXISTS)
     set(HAVE_STRPTIME TRUE)
+    writeToConfigFile(HAVE_STRPTIME 1 "Define to 1 if you have the 'strptime' function.")
 else()
     set(HAVE_STRPTIME FALSE)
+    writeToConfigFile(HAVE_STRPTIME 0 "Define to 1 if you have the 'strptime' function.")
 endif()
 
 check_symbol_exists(daemon unistd.h DAEMON_EXISTS)
@@ -1311,16 +1271,20 @@ endif()
 check_cxx_symbol_exists(timegm "time.h" TIMEGM_EXISTS)
 if(TIMEGM_EXISTS)
     set(HAVE_TIMEGM TRUE)
+    writeToConfigFile(HAVE_TIMEGM 1 "Define to 1 if you have the 'timegm' function.")
 else()
     set(HAVE_TIMEGM FALSE)
+    writeToConfigFile(HAVE_TIMEGM 0 "Define to 1 if you have the 'timegm' function.")
 endif()
 
-# TODOm: this library cannot be found, yet
+# TODOm: this header cannot be found, yet
 check_cxx_symbol_exists(port_associate "port.h" PORT_ASSOCIATE_EXISTS)
 if(PORT_ASSOCIATE_EXISTS)
     set(HAVE_PORT_ASSOCIATE TRUE)
+    writeToConfigFile(HAVE_PORT_ASSOCIATE 1 "Define to 1 if you have the 'port_associate' function.")
 else()
     set(HAVE_PORT_ASSOCIATE FALSE)
+    writeToConfigFile(HAVE_PORT_ASSOCIATE 0 "Define to 1 if you have the 'port_associate' function.")
 endif()
 
 set(save_CMAKE_LIBRARIES "${CMAKE_REQUIRED_LIBRARIES}")
@@ -1343,6 +1307,7 @@ endif()
 
 if(have_kqueue)
     set(HAVE_KQUEUE TRUE)
+    writeToConfigFile(HAVE_KQUEUE 1 "Define to 1 if you have the `kqueue' function.")
     set(keventCode [==[
             #include <sys/time.h>
             #include <sys/types.h>
@@ -1360,12 +1325,13 @@ if(have_kqueue)
     message("Whether struct kevent.udata is intptr_t")
     check_cxx_source_compiles("${keventCode}" kevent_udata_intptr_t)
     if(kevent_udata_intptr_t)
-        # add_compile_definitions(KEVENT_UDATA_INTPTR_T=1)
-        # message("Define to 1 if struct kevent.udata is intptr_t") # TODOm: remove this one
         writeToConfigFile(KEVENT_UDATA_INTPTR_T 1 "Define to 1 if struct kevent.udata is intptr_t.")
+    else()
+        writeToConfigFile(KEVENT_UDATA_INTPTR_T 0 "Define to 1 if struct kevent.udata is intptr_t")
     endif()
 else()
 	message(WARNING "The kqueue has NOT been found")
+    writeToConfigFile(HAVE_KQUEUE 0 "Define to 1 if you have the `kqueue' function.")
 #    message("Try installing it with the command: sudo apt install libkqueue-dev")
 #    message("Possible location where it might be located is: /usr/include/kqueue/sys/event.h")
 #    message("and not at the /usr/include. So I have to include the /usr/include/kqueue/ path in")
@@ -1385,8 +1351,6 @@ check_struct_has_member(
 )
 
 if(HAVE_SIN_LEN)
-    # add_compile_definitions(HAVE_SOCKADDR_IN_SIN_LEN=1)  # TODOm: remove this one
-    # message("Define to 1 if struct sockaddr_in has sin_len member.")
     writeToConfigFile(HAVE_SOCKADDR_IN_SIN_LEN 1 "Define to 1 if struct sockaddr_in has sin_len member.")
 else()
     writeToConfigFile(HAVE_SOCKADDR_IN_SIN_LEN 0 "Define to 1 if struct sockaddr_in has sin_len member.")
@@ -1402,8 +1366,6 @@ check_struct_has_member(
 )
 
 if(HAVE_SIN6_LEN)
-    # add_compile_definitions(HAVE_SOCKADDR_IN6_SIN6_LEN=1)  # TODOm: remove this one
-    # message("Define to 1 if struct sockaddr_in6 has sin6_len member.")
     writeToConfigFile(HAVE_SOCKADDR_IN6_SIN6_LEN 1 "Define to 1 if struct sockaddr_in6 has sin6_len member.")
 endif()
 
@@ -1423,14 +1385,10 @@ set(nameAssignableFromConst [==[
 
 check_cxx_source_compiles("${nameAssignableFromConst}" have_option_const_name)
 if(have_option_const_name)
-    # add_compile_definitions(HAVE_OPTION_CONST_NAME=1)  # TODOm: remove this one
-    # message("Define 1 if struct option.name is const char*")
     writeToConfigFile(HAVE_OPTION_CONST_NAME 1 "Define 1 if struct option.name is const char*")
 endif()
 
 if(websocket)
-    # add_compile_definitions(ENABLE_WEBSOCKET=1)  # TODOm: remove this one
-    # message("Define 1 if WebSocket support is enabled")
     writeToConfigFile(ENABLE_WEBSOCKET 1 "Define 1 if WebSocket support is enabled")
 
     # TODO:  Should check in the future as currently this is not enabled.

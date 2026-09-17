@@ -3,12 +3,9 @@ add_executable(aria2c main.cc)
 list(APPEND srcs A2STR.cc; AbstractAuthResolver.cc; AbstractCommand.cc; )
 list(APPEND hedrs A2STR.h;  AbstractAuthResolver.h;  AbstractCommand.h;  a2algo.h; a2io.h; a2iterator.h; a2netcompat.h; a2time.h; )
 
-# TODOm: recheck the target compile definitions, as it should be founded from the config.h file.
-# TODOm: should be declared here
-
-
 add_compile_definitions(HAVE_CONFIG_H=1)
 
+# TODOm: recheck the target compile definitions, as it should be founded from the config.h file.
 target_compile_definitions(aria2c PRIVATE
 	HAVE_GETTIMEOFDAY=1
 	HAVE_SYS_SOCKET_H=1
@@ -25,7 +22,7 @@ target_include_directories(aria2c PRIVATE
 	${PROJECT_BINARY_DIR}/includes
 	${PROJECT_BINARY_DIR}
 	${KQUEUE_INCLUDE_DIRS}
-	"/usr/include/libxml2"  # TODOm: check this path, for the below reason
+	${LibXml2_INCLUDE_DIRS}
 )
 
 list(APPEND srcs
@@ -706,19 +703,19 @@ if(NOT HAVE_ASCTIME_R)
     )
 endif()
 
-if(NOT HAVE_BASENAME)  #TODOm: should added to config.h
+if(NOT HAVE_BASENAME)
     list(APPEND srcs
        libgen.c; libgen.h
     )
 endif()
 
-if(NOT HAVE_GETADDRINFO)  #TODOm: should added to config.h
+if(NOT HAVE_GETADDRINFO)
     list(APPEND srcs
         getaddrinfo.c; getaddrinfo.h
     )
 endif()
 
-if(NOT HAVE_GAI_STRERROR)   #TODOm: should added to config.h
+if(NOT HAVE_GAI_STRERROR)
     list(APPEND srcs
         gai_strerror.c; gai_strerror.h
     )
@@ -736,37 +733,37 @@ if(NOT HAVE_LOCALTIME_R)
     )
 endif()
 
-if(NOT HAVE_STRPTIME)   #TODOm: should added to config.h
+if(NOT HAVE_STRPTIME)
     list(APPEND srcs
         strptime.c; strptime.h
     )
 endif()
 
-if(NOT HAVE_TIMEGM)   #TODOm: should added to config.h
+if(NOT HAVE_TIMEGM)
     list(APPEND srcs
         timegm.c; timegm.h
     )
 endif()
 
-if(NOT HAVE_DAEMON)   #TODOm: should added to config.h
+if(NOT HAVE_DAEMON)
     list(APPEND srcs
         daemon.cc; daemon.h
     )
 endif()
 
-if(HAVE_POLL)   #TODOm: should added to config.h
+if(HAVE_POLL)
     list(APPEND srcs
         PollEventPoll.cc; PollEventPoll.h
     )
 endif()
 
-if(HAVE_PORT_ASSOCIATE)   #TODOm: should added to config.h
+if(HAVE_PORT_ASSOCIATE)
     list(APPEND srcs
         PortEventPoll.cc; PortEventPoll.h
     )
 endif()
 
-if(HAVE_KQUEUE)   #TODOm: should added to config.h
+if(HAVE_KQUEUE)
 	list(APPEND srcs
 		KqueueEventPoll.cc; KqueueEventPoll.h
 	)
@@ -808,17 +805,6 @@ if(ENABLE_LIBARIA2)
 	# )
 endif()
 
-# target_include_directories(aria2c PRIVATE
-# 	${PROJECT_SOURCE_DIR}/lib
-# 	${PROJECT_SOURCE_DIR}/intl
-# 	${CMAKE_CURRENT_SOURCE_DIR}/includes
-
-# 	${PROJECT_BINARY_DIR}
-# 	${PROJECT_BINARY_DIR}/includes
-
-# 	"/usr/include/kqueue"  # TODOm: recheck this path, that there is no other way to add the given path
-# )
-
 target_compile_definitions(aria2c PRIVATE
 	LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}"
 )
@@ -850,7 +836,7 @@ string(APPEND CMAKE_LD_FLAGS
 )
 
 # The below <LIB>_LIBRARIES variables, come from the ../CMakeLists.txt
-# which are generated automatically from pkg_check_modules() of find_package()
+# which are generated automatically from pkg_check_modules() or find_package()
 list(APPEND EXTLDADD
 	${ALLOCA}
 	${EXTRALIBS}
