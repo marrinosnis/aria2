@@ -3,12 +3,9 @@ add_executable(aria2c main.cc)
 list(APPEND srcs A2STR.cc; AbstractAuthResolver.cc; AbstractCommand.cc; )
 list(APPEND hedrs A2STR.h;  AbstractAuthResolver.h;  AbstractCommand.h;  a2algo.h; a2io.h; a2iterator.h; a2netcompat.h; a2time.h; )
 
-# TODOm: recheck the target compile definitions, as it should be founded from the config.h file.
-# TODOm: should be declared here
-
-
 add_compile_definitions(HAVE_CONFIG_H=1)
 
+# TODOm: recheck the target compile definitions, as it should be founded from the config.h file.
 target_compile_definitions(aria2c PRIVATE
 	HAVE_GETTIMEOFDAY=1
 	HAVE_SYS_SOCKET_H=1
@@ -21,12 +18,11 @@ target_include_directories(aria2c PRIVATE
 	${PROJECT_SOURCE_DIR}/lib
 	${PROJECT_SOURCE_DIR}/intl
 	${CMAKE_CURRENT_SOURCE_DIR}/includes
-	${CMAKE_CURRENT_SOURCE_DIR}
 
-	${PROJECT_BINARY_DIR}
 	${PROJECT_BINARY_DIR}/includes
-
-	"/usr/include/kqueue"  # TODOm: recheck this path, that there is no other way to add the given path
+	${PROJECT_BINARY_DIR}
+	${KQUEUE_INCLUDE_DIRS}
+	${LibXml2_INCLUDE_DIRS}
 )
 
 list(APPEND srcs
@@ -697,7 +693,7 @@ if(ENABLE_METALINK)
 	    MetalinkParserStateV4Impl.cc; MetalinkParserStateV4Impl.h;
 	    MetalinkPostDownloadHandler.cc; MetalinkPostDownloadHandler.h;
 	    MetalinkResource.cc; MetalinkResource.h;
-	    metalink_helper.cc; metalink_helper.;
+	    metalink_helper.cc; metalink_helper.h;
     )
 endif()
 
@@ -707,19 +703,19 @@ if(NOT HAVE_ASCTIME_R)
     )
 endif()
 
-if(NOT HAVE_BASENAME)  #TODOm: should added to config.h
+if(NOT HAVE_BASENAME)
     list(APPEND srcs
        libgen.c; libgen.h
     )
 endif()
 
-if(NOT HAVE_GETADDRINFO)  #TODOm: should added to config.h
+if(NOT HAVE_GETADDRINFO)
     list(APPEND srcs
         getaddrinfo.c; getaddrinfo.h
     )
 endif()
 
-if(NOT HAVE_GAI_STRERROR)   #TODOm: should added to config.h
+if(NOT HAVE_GAI_STRERROR)
     list(APPEND srcs
         gai_strerror.c; gai_strerror.h
     )
@@ -737,37 +733,37 @@ if(NOT HAVE_LOCALTIME_R)
     )
 endif()
 
-if(NOT HAVE_STRPTIME)   #TODOm: should added to config.h
+if(NOT HAVE_STRPTIME)
     list(APPEND srcs
         strptime.c; strptime.h
     )
 endif()
 
-if(NOT HAVE_TIMEGM)   #TODOm: should added to config.h
+if(NOT HAVE_TIMEGM)
     list(APPEND srcs
         timegm.c; timegm.h
     )
 endif()
 
-if(NOT HAVE_DAEMON)   #TODOm: should added to config.h
+if(NOT HAVE_DAEMON)
     list(APPEND srcs
         daemon.cc; daemon.h
     )
 endif()
 
-if(HAVE_POLL)   #TODOm: should added to config.h
+if(HAVE_POLL)
     list(APPEND srcs
         PollEventPoll.cc; PollEventPoll.h
     )
 endif()
 
-if(HAVE_PORT_ASSOCIATE)   #TODOm: should added to config.h
+if(HAVE_PORT_ASSOCIATE)
     list(APPEND srcs
         PortEventPoll.cc; PortEventPoll.h
     )
 endif()
 
-if(HAVE_KQUEUE)   #TODOm: should added to config.h
+if(HAVE_KQUEUE)
 	list(APPEND srcs
 		KqueueEventPoll.cc; KqueueEventPoll.h
 	)
@@ -807,19 +803,7 @@ if(ENABLE_LIBARIA2)
 	# 	FILES ${CMAKE_CURRENT_BINARY_DIR}/libaria2.pc
 	# 	DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig
 	# )
-	
 endif()
-
-# target_include_directories(aria2c PRIVATE
-# 	${PROJECT_SOURCE_DIR}/lib
-# 	${PROJECT_SOURCE_DIR}/intl
-# 	${CMAKE_CURRENT_SOURCE_DIR}/includes
-
-# 	${PROJECT_BINARY_DIR}
-# 	${PROJECT_BINARY_DIR}/includes
-
-# 	"/usr/include/kqueue"  # TODOm: recheck this path, that there is no other way to add the given path
-# )
 
 target_compile_definitions(aria2c PRIVATE
 	LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}"
@@ -851,29 +835,29 @@ string(APPEND CMAKE_LD_FLAGS
 	"
 )
 
-string(APPEND EXTLDADD
-	"${ALLOCA}
+# The below <LIB>_LIBRARIES variables, come from the ../CMakeLists.txt
+# which are generated automatically from pkg_check_modules() or find_package()
+list(APPEND EXTLDADD
+	${ALLOCA}
 	${EXTRALIBS}
-	${ZLIB_LIBS}
-	${LIBXML2_LIBS}
-	${EXPAT_LIBS}
-	${SQLITE3_LIBS}
+	${ZLIB_LIBRARIES}
+	${LIBUV_LIBRARIES}
+	${LibXml2_LIBRARIES}
+	${EXPAT_LIBRARIES}
+	${SQLite3_LIBRARIES}
 	${WINTLS_LIBS}
-	${LIBGNUTLS_LIBS}
-	${OPENSSL_LIBS}
-	${LIBNETTLE_LIBS}
-	${LIBGMP_LIBS}
+	${GnuTLS_LIBRARIES}
+	${KQUEUE_LIBRARIES}
+	${OpenSSL_LIBRARIES}
+	${LIBNETTLE_LIBRARIES}
+	${GmpLib_LIBRARIES}
 	${LIBGCRYPT_LIBS}
-	${LIBSSH2_LIBS}
-	${LIBCARES_LIBS}
+	${LIBSSH2_LIBRARIES}
+	${LIBCARES_LIBRARIES}
 	${WSLAY_LIBS}
-	${TCMALLOC_LIBS}
-	${JEMALLOC_LIBS}
+	${JEMALLOC_LIBRARIES}
 	${LTLIBINTL}
-	"
 )
-
-string(STRIP ${EXTLDADD} EXTLDADD)
 
 if(ENABLE_LIBARIA2)  # if the aria2 is shared library, first link all the libraries to libaria2
 	add_library(libaria2 INTERFACE)
@@ -900,8 +884,8 @@ string(APPEND CMAKE_CXX_FLAGS
 	"
 )
 
-string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 target_sources(aria2c
     PUBLIC
