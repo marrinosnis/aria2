@@ -1,29 +1,10 @@
 add_executable(aria2c main.cc)
+add_library(aria2 SHARED)
 
 list(APPEND srcs A2STR.cc; AbstractAuthResolver.cc; AbstractCommand.cc; )
 list(APPEND hedrs A2STR.h;  AbstractAuthResolver.h;  AbstractCommand.h;  a2algo.h; a2io.h; a2iterator.h; a2netcompat.h; a2time.h; )
 
 add_compile_definitions(HAVE_CONFIG_H=1)
-
-# TODOm: recheck the target compile definitions, as it should be founded from the config.h file.
-target_compile_definitions(aria2c PRIVATE
-	HAVE_GETTIMEOFDAY=1
-	HAVE_SYS_SOCKET_H=1
-	HAVE_NETINET_IN_H=1
-	HAVE_INTTYPES_H=1
-	HAVE_STDINT_H=1
-)
-
-target_include_directories(aria2c PRIVATE
-	${PROJECT_SOURCE_DIR}/lib
-	${PROJECT_SOURCE_DIR}/intl
-	${CMAKE_CURRENT_SOURCE_DIR}/includes
-
-	${PROJECT_BINARY_DIR}/includes
-	${PROJECT_BINARY_DIR}
-	${KQUEUE_INCLUDE_DIRS}
-	${LibXml2_INCLUDE_DIRS}
-)
 
 list(APPEND srcs
     a2algo.h;
@@ -313,7 +294,7 @@ if(ENABLE_WEBSOCKET)
     )
 endif()
 
-if(NOT ENABLE_WEBSOCKET)  # TODOm: check here the negative
+if(NOT ENABLE_WEBSOCKET)
     list(APPEND srcs
         NullWebSocketSessionMan.h
     )
@@ -775,9 +756,7 @@ if(HAVE_LIBUV)
     )
 endif()
 
-
 if(ENABLE_LIBARIA2)
-
 	include(GNUInstallDirs)
 
 	list(APPEND srcs
@@ -786,53 +765,46 @@ if(ENABLE_LIBARIA2)
 		KeepRunningCommand.cc; KeepRunningCommand.h;
 	)
 
-	install(TARGETS aria2c
+	install(TARGETS aria2
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		RUNTIME DESTINATION ${CMAKE_INSTALl_BINDIR}
 	)
-
-	# # TODOm: recheck the below code, and instead keep the above one
-	# configure_file(
-	# 	libaria2.pc.in
-	# 	${CMAKE_CURRENT_BINARY_DIR}/libaria2.pc
-	# 	@ONLY
-	# )
-
-	# install(
-	# 	FILES ${CMAKE_CURRENT_BINARY_DIR}/libaria2.pc
-	# 	DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig
-	# )
 endif()
 
-target_compile_definitions(aria2c PRIVATE
+target_compile_definitions(aria2 PUBLIC
 	LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}"
 )
 
-string(APPEND CMAKE_CXX_FLAGS
-	"${EXTRACPPFLAGS}
-	${ZLIB_CFLAGS}
-	${LIBUV_CFLAGS}
-	${LIBXML2_CFLAGS}
-	${EXPAT_CFLAGS}
-	${SQLITE3_CFLAGS}
-	${LIBGNUTLS_CFLAGS}
-	${OPENSSL_CFLAGS}
-	${LIBNETTLE_CFLAGS}
-	${LIBGMP_CFLAGS}
-	${LIBGCRYPT_CFLAGS}
-	${LIBSSH2_CFLAGS}
-	${LIBCARES_CFLAGS}
-	${WSLAY_CFLAGS}
-	${TCMALLOC_CFLAGS}
-	${JEMALLOC_CFLAGS}"
+target_include_directories(aria2c
+	PRIVATE
+		includes
 )
 
-
-string(APPEND CMAKE_LD_FLAGS
-	"${EXTRALDFLAGS}
-	${APPLETLS_LDFLAGS}
-	"
+target_include_directories(aria2
+	PRIVATE
+		${PROJECT_SOURCE_DIR}/lib
+		${PROJECT_SOURCE_DIR}/intl
+		${CMAKE_CURRENT_SOURCE_DIR}/includes
+		${PROJECT_BINARY_DIR}/includes
+		${PROJECT_BINARY_DIR}
+		${EXTRACPPFLAGS}
+		${KQUEUE_INCLUDE_DIRS}
+		${ZLIB_INCLUDE_DIRS}
+		${LIBUV_INCLUDE_DIRS}
+		${LibXml2_INCLUDE_DIRS}
+		${EXPAT_INCLUDE_DIRS}
+		${SQLite3_INCLUDE_DIRS}
+		${GnuTLS_INCLUDE_DIRS}
+		${OpenSSL_INCLUDE_DIRS}
+		${LIBNETTLE_INCLUDE_DIRS}
+		${GmpLib_INCLUDE_DIRS}
+		${LIBGCRYPT_INCLUDE_DIRS}
+		${LIBSSH2_INCLUDE_DIRS}
+		${LIBCARES_INCLUDE_DIRS}
+		${WSLAY_INCLUDE_DIRS}
+		${TCMALLOC_INCLUDE_DIRS}
+		${JEMALLOC_INCLUDE_DIRS}
 )
 
 # The below <LIB>_LIBRARIES variables, come from the ../CMakeLists.txt
@@ -855,25 +827,31 @@ list(APPEND EXTLDADD
 	${LIBSSH2_LIBRARIES}
 	${LIBCARES_LIBRARIES}
 	${WSLAY_LIBS}
+	${TCMALLOC_LIBRARIES}
 	${JEMALLOC_LIBRARIES}
-	${LTLIBINTL}
 )
 
-if(ENABLE_LIBARIA2)  # if the aria2 is shared library, first link all the libraries to libaria2
-	add_library(libaria2 INTERFACE)
-
-	target_link_libraries(libaria2 INTERFACE
+target_link_libraries(aria2
+	PUBLIC
 		"${EXTLDADD}"
-	)
-	target_link_libraries(aria2c PRIVATE # and then link the libaria2, to the main library (aria2c)
-		libaria2
-	)
+)
 
-else()  # Here that libs from the EXTLADADD, are linked directly to the main library (aria2)
-	target_link_libraries(aria2c PRIVATE
-		"${EXTLDADD}"
-	)
-endif()
+target_link_libraries(aria2c
+	PRIVATE
+		aria2
+)
+
+target_sources(aria2
+    PRIVATE
+        ${srcs}
+    PUBLIC
+        FILE_SET aria2Headers
+        TYPE HEADERS
+        BASE_DIRS
+            ${CMAKE_CURRENT_LIST_DIR}
+        FILES
+            ${hedrs}
+)
 
 set(CMAKE_C_FLAGS "${EXTRACFLAGS}")
 
@@ -884,19 +862,11 @@ string(APPEND CMAKE_CXX_FLAGS
 	"
 )
 
-string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
-string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-
-target_sources(aria2c
-    PUBLIC
-        ${srcs}
-
-    PUBLIC
-        FILE_SET aria2Headers
-        TYPE HEADERS
-        BASE_DIRS
-            ${CMAKE_CURRENT_LIST_DIR}
-        FILES
-            ${hedrs}
+string(APPEND CMAKE_LD_FLAGS
+	"${EXTRALDFLAGS}
+	${APPLETLS_LDFLAGS}
+	"
 )
 
+string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
