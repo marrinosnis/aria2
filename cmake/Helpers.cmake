@@ -47,6 +47,6 @@ function(writeToConfigFile definition value message)
         string(CONFIGURE "${content}" content @ONLY)
     endif()
 
-        file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/config.h" ${content})
+        file(APPEND "${PROJECT_SOURCE_DIR}/src/config.h" ${content})
 
 endfunction()
