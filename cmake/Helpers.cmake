@@ -11,7 +11,7 @@ endfunction()
 
 
 function(spaceIdentation value)
-	set(numToSubstract 15)  # this value here, has been set based on the biggest string that currently exists from the ones that needs to be printed
+	set(numToSubstract 22)  # this value here, has been set based on the biggest string that currently exists from the ones that needs to be printed
 	string(LENGTH ${value} sizeOfVar)
 	math(EXPR numSpaces "${numToSubstract} - ${sizeOfVar}")
 

@@ -79,6 +79,8 @@ option(tcmalloc "" TRUE)
 option(jemalloc "" FALSE)
 option(libssh2 "" FALSE)
 
+option(buildTests "" FALSE)
+
 option(ssl "" TRUE)
 option(bittorrent "" FALSE)
 option(metalink "" TRUE)
@@ -565,6 +567,8 @@ if(have_osx)
 endif()
 if(have_appletls)
     set(HAVE_APPLETLS TRUE)
+else()
+    set(HAVE_APPLETLS FALSE)
 endif()
 if(have_wintls)
     set(HAVE_WINTLS TRUE)
@@ -1399,10 +1403,14 @@ endif()
 
 if(websocket)
     set(ENABLE_WEBSOCKET TRUE)
+else()
+    set(ENABLE_WEBSOCKET FALSE)
 endif()
 
 if(libaria2)
     set(ENABLE_LIBARIA2 TRUE)
+else()
+    set(ENABLE_LIBARIA2 FALSE)
 endif()
 
 # AC_SUBST([bashcompletiondir]) # TODO: uses the AM_CONDITIONAL actually uses AC_SUBST but set it like this for searching purposes in order to be able to find it
@@ -1456,7 +1464,10 @@ string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src/)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/test/)
+
+if(buildTests)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/test/)
+endif()
 
 message("")
 message(STATUS "Summary of build options\n")
@@ -1499,6 +1510,7 @@ LibExpat;\
 Libssh2;\
 Zlib;\
 Jemalloc;\
+Tcmalloc;\
 Epoll;\
 Bittorrent;\
 Metalink;\
@@ -1506,8 +1518,8 @@ XML-RPC;\
 Message Digest;\
 WebSocket;\
 Libaria2;\
+Build test directory;\
 bash_completion;\
-Tcmalloc;\
 Static Build")
 
 string(APPEND printValues "\
@@ -1548,15 +1560,16 @@ ${have_libexpat};\
 ${have_libssh2};\
 ${have_zlib};\
 ${have_jemalloc};\
+${have_tcmalloc};\
 ${have_epoll};\
-${enable_bittorrent};\
-${enable_metalink};\
+${bittorrent};\
+${metalink};\
 ${enable_xml_rpc};\
 ${use_md};\
-${enable_websocket};\
+${websocket};\
 ${ENABLE_LIBARIA2};\
+${buildTests};\
 ${bashcompletiondir};\
-${have_tcmalloc};\
 ${ARIA2_STATIC}")
 
 printBuildOptions(printKeys printValues)
