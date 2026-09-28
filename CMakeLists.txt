@@ -74,19 +74,20 @@ option(sqlite3 "" FALSE)
 option(libxml2 "" FALSE)
 option(libexpat "" FALSE)
 option(libcares "" FALSE)
-option(libz "" FALSE)
+option(libz "" TRUE)
 option(tcmalloc "" TRUE)
 option(jemalloc "" FALSE)
 option(libssh2 "" FALSE)
 
 option(buildTests "" FALSE)
+option(BUILD_SHARED_LIBS "" TRUE)
 
 option(ssl "" TRUE)
 option(bittorrent "" FALSE)
 option(metalink "" TRUE)
 option(websocket "" FALSE)
 option(epoll "" FALSE)
-option(libaria2 "" TRUE)
+option(libaria2 "" FALSE)
 option(werror "" TRUE)
 
 set(ca_bundle "0" CACHE FILEPATH "Set the path for the CA certificate")  # -Dca_bundle=path/to/cacert.crt file
@@ -191,7 +192,7 @@ if(ARIA2_STATIC)
     # set the pkg-config to produce static link libraries
     string(APPEND ${PKG_CONFIG_ARGN} " --static")
 else()
-    set(ARIA2_STATIC NO)
+    set(ARIA2_STATIC FALSE)
 endif()
 
 pkg_check_modules(CPPUNIT "cppunit >= 1.10.2")
@@ -209,8 +210,6 @@ if(libz)
         check_symbol_exists(zlibVersion "zlib.h" have_zlib)
         if(have_zlib)
             message("The zlib.h header found")
-            set(ZLIB_CFLAGS "")
-            set(ZLIB_LIBS "-lz")
             writeToConfigFile(HAVE_ZLIB 1 "Define to 1 if you have zlib.")
         else()
             message(WARNING "ARIA2_DEP_NOT_MET(libz)")
@@ -1567,10 +1566,13 @@ ${metalink};\
 ${enable_xml_rpc};\
 ${use_md};\
 ${websocket};\
-${ENABLE_LIBARIA2};\
+${ENABLE_LIBARIA2} (shared = ${BUILD_SHARED_LIBS});\
 ${buildTests};\
 ${bashcompletiondir};\
 ${ARIA2_STATIC}")
+
+# TODOm: currently BUILD_SHARED_LIBS set to TRUE, but this shoud change to
+# be able to build both shared and static types of library
 
 printBuildOptions(printKeys printValues)
 
