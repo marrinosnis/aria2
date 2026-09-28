@@ -1,5 +1,5 @@
 add_executable(aria2c main.cc)
-add_library(aria2 SHARED)
+add_library(aria2)
 
 list(APPEND srcs A2STR.cc; AbstractAuthResolver.cc; AbstractCommand.cc; )
 list(APPEND hedrs A2STR.h;  AbstractAuthResolver.h;  AbstractCommand.h;  a2algo.h; a2io.h; a2iterator.h; a2netcompat.h; a2time.h; )
@@ -432,7 +432,7 @@ if(HAVE_OPENSSL)
         LibsslDHKeyExchange.cc; LibsslDHKeyExchange.h;
     )
 
-    if(NOT HAVE_APPLETLS)  # TODOm: check here the negative
+    if(NOT HAVE_APPLETLS)
         list(APPEND srcs
             LibsslTLSContext.cc; LibsslTLSContext.h;
             LibsslTLSSession.cc; LibsslTLSSession.h;
@@ -768,7 +768,7 @@ if(ENABLE_LIBARIA2)
 	install(TARGETS aria2
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALl_BINDIR}
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 	)
 endif()
 
@@ -809,6 +809,7 @@ target_include_directories(aria2
 
 # The below <LIB>_LIBRARIES variables, come from the ../CMakeLists.txt
 # which are generated automatically from pkg_check_modules() or find_package()
+# START_CLEAR_SPACES_EXTLADADD
 list(APPEND EXTLDADD
 	${ALLOCA}
 	${EXTRALIBS}
@@ -831,15 +832,62 @@ list(APPEND EXTLDADD
 	${JEMALLOC_LIBRARIES}
 )
 
-target_link_libraries(aria2
-	PUBLIC
-		"${EXTLDADD}"
+string(STRIP "${EXTLDADD}" EXTLDADD)
+string(REGEX REPLACE "[ \t\r\n]+" " " EXTLDADD "${EXTLDADD}")
+# END_CLEAR_SPACES_EXTLADADD
+
+
+# START_CLEAR_SPACES_CMAKE_C_FLAGS
+set(CMAKE_C_FLAGS "${EXTRACFLAGS}")
+
+string(STRIP "${CMAKE_C_FLAGS}" CMAKE_C_FLAGS)
+string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+# END_CLEAR_SPACES_CMAKE_C_FLAGS
+
+
+# START_CLEAR_SPACES_CMAKE_CXX_FLAGS
+string(APPEND CMAKE_CXX_FLAGS
+    "${WARNCXXFLAGS}
+	 ${CXX1XCXXFLAGS}
+	 ${EXTRACXXFLAGS}
+	"
 )
 
-target_link_libraries(aria2c
-	PRIVATE
-		aria2
+string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+# END_CLEAR_SPACES_CMAKE_CXX_FLAGS
+
+
+# START_CLEAR_SPACES_CMAKE_LD_FLAGS
+string(APPEND CMAKE_LD_FLAGS
+	"${EXTRALDFLAGS}
+	${APPLETLS_LDFLAGS}
+	"
 )
+
+string(STRIP "${CMAKE_LD_FLAGS}" CMAKE_LD_FLAGS)
+string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_LD_FLAGS "${CMAKE_LD_FLAGS}")
+# END_CLEAR_SPACES_CMAKE_LD_FLAGS
+
+
+if(ENABLE_LIBARIA2)
+	target_link_libraries(aria2
+		PUBLIC
+			"${EXTLDADD}"
+	)
+
+	target_link_libraries(aria2c
+		PRIVATE
+			aria2
+	)
+
+else()
+	target_link_libraries(aria2c
+		PRIVATE
+			aria2
+			"${EXTLDADD}"
+	)
+endif()
 
 target_sources(aria2
     PRIVATE
@@ -852,21 +900,3 @@ target_sources(aria2
         FILES
             ${hedrs}
 )
-
-set(CMAKE_C_FLAGS "${EXTRACFLAGS}")
-
-string(APPEND CMAKE_CXX_FLAGS
-    "${WARNCXXFLAGS}
-	 ${CXX1XCXXFLAGS}
-	 ${EXTRACXXFLAGS}
-	"
-)
-
-string(APPEND CMAKE_LD_FLAGS
-	"${EXTRALDFLAGS}
-	${APPLETLS_LDFLAGS}
-	"
-)
-
-string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
-string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
