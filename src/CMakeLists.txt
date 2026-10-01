@@ -1,6 +1,12 @@
 add_executable(aria2c main.cc)
 add_library(aria2)
 
+set_target_properties(aria2
+	PROPERTIES
+		VERSION 1.0.0
+		SOVERSION 1
+)
+
 list(APPEND srcs A2STR.cc; AbstractAuthResolver.cc; AbstractCommand.cc; )
 list(APPEND hedrs A2STR.h;  AbstractAuthResolver.h;  AbstractCommand.h;  a2algo.h; a2io.h; a2iterator.h; a2netcompat.h; a2time.h; )
 
@@ -756,8 +762,8 @@ if(HAVE_LIBUV)
     )
 endif()
 
+include(GNUInstallDirs)
 if(ENABLE_LIBARIA2)
-	include(GNUInstallDirs)
 
 	list(APPEND srcs
 		ApiCallbackDownloadEventListener.cc; ApiCallbackDownloadEventListener.h;
@@ -771,6 +777,20 @@ if(ENABLE_LIBARIA2)
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 	)
 endif()
+
+install(TARGETS aria2 aria2c
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+# Here we need the ${CMAKE_INSTALL_PREFIX} if it has been setted, because
+# the path is relative to the current bin. Based on that, the binary can
+# run at the bin directory where it will be created, but if moved, it won't
+# be able to find the library resulting in failure.
+set_target_properties(aria2c
+	PROPERTIES
+		INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
+)
 
 target_compile_definitions(aria2 PUBLIC
 	LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}"
@@ -809,7 +829,7 @@ target_include_directories(aria2
 
 # The below <LIB>_LIBRARIES variables, come from the ../CMakeLists.txt
 # which are generated automatically from pkg_check_modules() or find_package()
-# START_CLEAR_SPACES_EXTLADADD
+# START_REMOVE_POSSIBLE_SPACES_FROM_EXTLADADD
 list(APPEND EXTLDADD
 	${ALLOCA}
 	${EXTRALIBS}
@@ -834,18 +854,18 @@ list(APPEND EXTLDADD
 
 string(STRIP "${EXTLDADD}" EXTLDADD)
 string(REGEX REPLACE "[ \t\r\n]+" " " EXTLDADD "${EXTLDADD}")
-# END_CLEAR_SPACES_EXTLADADD
+# END_REMOVE_POSSIBLE_SPACES_FROM_EXTLADADD
 
 
-# START_CLEAR_SPACES_CMAKE_C_FLAGS
+# START_REMOVE_POSSIBLE_SPACES_FROM_CMAKE_C_FLAGS
 set(CMAKE_C_FLAGS "${EXTRACFLAGS}")
 
 string(STRIP "${CMAKE_C_FLAGS}" CMAKE_C_FLAGS)
 string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-# END_CLEAR_SPACES_CMAKE_C_FLAGS
+# END_REMOVE_POSSIBLE_SPACES_FROM_CMAKE_C_FLAGS
 
 
-# START_CLEAR_SPACES_CMAKE_CXX_FLAGS
+# START_REMOVE_POSSIBLE_SPACES_FROM_CMAKE_CXX_FLAGS
 string(APPEND CMAKE_CXX_FLAGS
     "${WARNCXXFLAGS}
 	 ${CXX1XCXXFLAGS}
@@ -855,10 +875,10 @@ string(APPEND CMAKE_CXX_FLAGS
 
 string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
 string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-# END_CLEAR_SPACES_CMAKE_CXX_FLAGS
+# END_REMOVE_POSSIBLE_SPACES_FROM_CMAKE_CXX_FLAGS
 
 
-# START_CLEAR_SPACES_CMAKE_LD_FLAGS
+# START_REMOVE_POSSIBLE_SPACES_FROM_CMAKE_LD_FLAGS
 string(APPEND CMAKE_LD_FLAGS
 	"${EXTRALDFLAGS}
 	${APPLETLS_LDFLAGS}
@@ -867,8 +887,7 @@ string(APPEND CMAKE_LD_FLAGS
 
 string(STRIP "${CMAKE_LD_FLAGS}" CMAKE_LD_FLAGS)
 string(REGEX REPLACE "[ \t\r\n]+" " " CMAKE_LD_FLAGS "${CMAKE_LD_FLAGS}")
-# END_CLEAR_SPACES_CMAKE_LD_FLAGS
-
+# END_REMOVE_POSSIBLE_SPACES_FROM_CMAKE_LD_FLAGS
 
 if(ENABLE_LIBARIA2)
 	target_link_libraries(aria2
