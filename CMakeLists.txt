@@ -27,6 +27,10 @@ include(CheckCSourceCompiles)
 include(CheckStructHasMember)
 include(CheckFunctionExists)
 
+if(EXISTS ${PROJECT_SOURCE_DIR}/src/config.h)
+    file(REMOVE ${PROJECT_SOURCE_DIR}/src/config.h)
+endif()
+
 writeToConfigFile(PACKAGE "\"${PROJECT_NAME}\"" "Name of the package")
 writeToConfigFile(PACKAGE_BUGREPORT "\"https://github.com/aria2/aria2/issues\"" "Define to the address where bug reports for this package should be sent")
 writeToConfigFile(PACKAGE_NAME "\"${PROJECT_NAME}\"" "Define to the full name of this package")
