@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-14]
+        os: [ubuntu-22.04, macOS-14]
         compiler: [gcc, clang]
         crypto: [openssl, gnutls]
         bittorrent: [enable-bt, disable-bt]
@@ -44,7 +44,7 @@ jobs:
             libcppunit-dev
 
       - name: MacOS setup - Install necessary libraries
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS-14'
         run: |
           brew install cppunit gettext openssl libssh2 c-ares sqlite3 \
           pkg-config libtool
