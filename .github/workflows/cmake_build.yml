@@ -18,7 +18,7 @@ jobs:
           - crypto: openssl
             bittorrent: disable-bt
     
-    runs-on: ${{matrix.os}}
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout project
@@ -29,18 +29,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install \
-          g++-12 \
-          clang-15 \
-          cmake
-          libtool \
-          pkg-config \
-          libssl-dev \
-          libgnutls28-dev \
-          libc-ares-dev \
-          zlib1g-dev \
-          libsqlite3-dev \
-          libssh2-1-dev \
-          libcppunit-dev
+            g++-12 \
+            g++-12 \
+            clang-15 \
+            cmake
+            libtool \
+            pkg-config \
+            libssl-dev \
+            libgnutls28-dev \
+            libc-ares-dev \
+            zlib1g-dev \
+            libsqlite3-dev \
+            libssh2-1-dev \
+            libcppunit-dev
 
       - name: MacOS setup - Install necessary libraries
         if: runner.os == 'macOS'
@@ -53,6 +54,7 @@ jobs:
       #   run: |
       
       - name: Show working directory
+        if: always()
         run: |
           echo "Show the value of the ${{ github.workspace }}"
           echo "${{ github.workspace }}"
