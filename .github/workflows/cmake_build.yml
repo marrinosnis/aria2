@@ -10,7 +10,7 @@ jobs:
       matrix:
         os: [ubuntu-22.04, macos-14]
         compiler: [gcc, clang]
-        crypto: [openssl. gnutls]
+        crypto: [openssl, gnutls]
         bittorrent: [enable-bt, disable-bt]
         exlclude:
           - os: macos-14
