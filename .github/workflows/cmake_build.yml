@@ -10,7 +10,7 @@ jobs:
       matrix:
         os: [ubuntu-22.04]
         compiler: [g++]
-        crypto: [openssl, gnutls]
+        crypto: [openssl]
         # bittorrent: [enable-bt, disable-bt]
         exclude:
           - os: macos-14
@@ -61,8 +61,8 @@ jobs:
           build-dir: ${{ github.workspace }}/../build/${{ matrix.crypto }}
           options: |
             ${{ matrix.crypto }}=true
-            bittorrent=true
-            libaria2=true
-            buildTests=false
+              bittorrent=true
+              libaria2=true
+              buildTests=false
 
 
