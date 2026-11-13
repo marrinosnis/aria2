@@ -15,8 +15,8 @@ jobs:
         exclude:
           - os: macos-14
             crypto: gnutls
-          - crypto: openssl
-            bittorrent: disable-bt
+          # - crypto: openssl
+          #   bittorrent: disable-bt
     
     runs-on: ${{ matrix.os }}
 
