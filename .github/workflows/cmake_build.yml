@@ -41,6 +41,7 @@ jobs:
             libsqlite3-dev \
             libssh2-1-dev \
             libcppunit-dev \
+            libunwind-dev \
             libgoogle-perftools-dev
 
       # - name: MacOS setup - Install necessary libraries
