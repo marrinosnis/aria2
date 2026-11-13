@@ -9,10 +9,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-22.04]
-        compiler: [gcc, clang]
+        compiler: [g++]
         crypto: [openssl, gnutls]
-        bittorrent: [enable-bt, disable-bt]
-        exlclude:
+        # bittorrent: [enable-bt, disable-bt]
+        exclude:
           - os: macos-14
             crypto: gnutls
           - crypto: openssl
@@ -24,14 +24,13 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v7
 
+      # clang-15 \
       - name: Linux setup - Install necessary libraries
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install \
             g++-12 \
-            g++-12 \
-            clang-15 \
             cmake \
             libtool \
             pkg-config \
@@ -41,27 +40,28 @@ jobs:
             zlib1g-dev \
             libsqlite3-dev \
             libssh2-1-dev \
-            libcppunit-dev
+            libcppunit-dev \
+            libgoogle-perftools-dev
 
-      - name: MacOS setup - Install necessary libraries
-        if: runner.os == 'macOS-14'
-        run: |
-          brew install cppunit gettext openssl libssh2 c-ares sqlite3 \
-          pkg-config libtool
+      # - name: MacOS setup - Install necessary libraries
+      #   if: runner.os == 'macOS-14'
+      #   run: |
+      #     brew install cppunit gettext openssl libssh2 c-ares sqlite3 \
+      #     pkg-config libtool
       
       # - name: Setup clang (Linux)
       #   if: runner.os == 'Linux' && matrix.compiler == 'clang'
       #   run: |
-      
-      - name: Show working directory
-        if: always()
-        run: |
-          echo "Show the value of the ${{ github.workspace }}"
-          echo "${{ github.workspace }}"
 
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
         with: 
-          source-dir: ${{ github.workspace }}/
+          source-dir: ${{ github.workspace }}  # results inside the aria2 directory
           build-dir: ${{ github.workspace }}/../build
+          options: |
+            openssl=true
+            bittorrent=true
+            libaria2=true
+            buildTests=false
+
 
