@@ -92,7 +92,7 @@ option(metalink "" TRUE)
 option(websocket "" FALSE)
 option(epoll "" FALSE)
 option(libaria2 "" FALSE)
-option(werror "" TRUE)
+option(werror "" FALSE)
 option(doc "" TRUE)
 
 set(ca_bundle "0" CACHE FILEPATH "Set the path for the CA certificate")  # -Dca_bundle=path/to/cacert.crt file
