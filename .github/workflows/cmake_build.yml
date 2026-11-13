@@ -58,9 +58,9 @@ jobs:
         uses: threeal/cmake-action@v2.1.0
         with: 
           source-dir: ${{ github.workspace }}  # results inside the aria2 directory
-          build-dir: ${{ github.workspace }}/../build
+          build-dir: ${{ github.workspace }}/../build/${{ matrix.crypto }}
           options: |
-            openssl=true
+            ${{ matrix.crypto }}=true
             bittorrent=true
             libaria2=true
             buildTests=false
