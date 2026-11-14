@@ -96,7 +96,7 @@ jobs:
           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" html
 
       - name: Create artifact of the build directory
-        uses: actions/download-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: aria2-build-artifact
           path: ${{ github.workspace }}/../build/${{ matrix.crypto }}
