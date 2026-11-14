@@ -2,6 +2,9 @@ name: cmake_build
 
 on: push
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true
+
 jobs:
   build-project:
     name: Build Aria2
@@ -54,7 +57,7 @@ jobs:
       #   if: runner.os == 'Linux' && matrix.compiler == 'clang'
       #   run: |
 
-      - name: Build Project
+      - name: Configure Project with CMake
         uses: threeal/cmake-action@v2.1.0
         with: 
           source-dir: ${{ github.workspace }}  # results inside the aria2 directory
@@ -64,5 +67,18 @@ jobs:
               bittorrent=true
               libaria2=true
               buildTests=false
+              websocket=true
+              BUILD_SHARED_LIBS=true
+      
+      - name: Build manual pages and html pages
+        run: |
+          make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" man
+          make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" html
 
+      - name: Build project with Makefile Generator
+        run: |
+          make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)"
 
+      - name: Print the content of the doc/manual-src/en/_build
+        run: |
+          ls -la ${{ github.workspace }}/../build/${{ matrix.crypto }}/doc/manual-src/en/_build/
