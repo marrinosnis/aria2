@@ -58,6 +58,17 @@ jobs:
       #   if: runner.os == 'Linux' && matrix.compiler == 'clang'
       #   run: |
 
+      - name: Install python3 pip3 & sphinx-rtd-theme
+        run: |
+          sudo apt install python3.12 -y
+          echo "Version of python3 is: " python3 --version
+          
+          sudo apt-get install python3-pip
+          python3 -m pip install --upgrade pip
+          echo "The version of the pip3 is: " pip --version
+
+          pip install sphinx-rtd-theme
+
       - name: Configure Project with CMake
         uses: threeal/cmake-action@v2.1.0
         with: 
@@ -81,6 +92,7 @@ jobs:
 
 
       - name: Build project with Makefile Generator
+        # if: always()
         run: |
           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)"
 
