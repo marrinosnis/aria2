@@ -99,6 +99,7 @@ jobs:
       - name: Build project with Makefile Generator
         # if: always()
         run: |
+          cd ${{ github.workspace }}/../build/${{ matrix.crypto }}
           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)"
 
       - name: Print the content of the doc/manual-src/en/_build
