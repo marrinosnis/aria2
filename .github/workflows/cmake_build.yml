@@ -95,9 +95,13 @@ jobs:
           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" man
           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" html
 
+      - name: Create artifact of the build directory
+        uses: actions/download-artifact@v8
+        with:
+          name: aria2-build-artifact
+          path: ${{ github.workspace }}/../build/${{ matrix.crypto }}
 
       - name: Build project with Makefile Generator
-        # if: always()
         run: |
           cd ${{ github.workspace }}/../build/${{ matrix.crypto }}
           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)"
