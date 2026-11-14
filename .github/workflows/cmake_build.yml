@@ -72,8 +72,12 @@ jobs:
       
       - name: Build manual pages and html pages
         run: |
+          echo "First change to build directory"
+          cd ${{ github.workspace }}/../build/${{ matrix.crypto }}
+          
           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" man
           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" html
+
 
       - name: Build project with Makefile Generator
         run: |
