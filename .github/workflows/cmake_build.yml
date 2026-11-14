@@ -23,7 +23,6 @@ jobs:
     
     runs-on: ${{ matrix.os }}
       
-
     steps:
       - name: Checkout project
         uses: actions/checkout@v7
@@ -68,7 +67,7 @@ jobs:
               bittorrent=true
               libaria2=true
               buildTests=false
-              websocket=true
+              websocket=false
               BUILD_SHARED_LIBS=true
       
       - name: Build manual pages and html pages
