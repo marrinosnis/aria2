@@ -99,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: aria2-build-artifact
-          path: ${{ github.workspace }}/../build/${{ matrix.crypto }}
+          path: /home/runner/work/aria2/build/openssl/
 
       - name: Build project with Makefile Generator
         run: |
