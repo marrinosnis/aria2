@@ -41,7 +41,7 @@ jobs:
       
       - name: Workaround actions/upload-artifact#176
         run: |
-          echo "artifacts_build_path"=$(realpath $GITHUB_WORKSPACE/../build)" >> GITHUB_ENV
+          echo "artifacts_build_path=$(realpath $GITHUB_WORKSPACE/../build)" >> GITHUB_ENV
 
       - name: Upload artifacts with the build's src content
         uses: actions/upload-artifact@v7
