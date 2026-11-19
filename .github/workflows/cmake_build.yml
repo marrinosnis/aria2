@@ -31,11 +31,11 @@ jobs:
       
       - name: Print the content of the build's directory
         run: |
-          ls -la ${{ github.workspace }}/../build
+          ls -la ${{ github.workspace }}/../build/
           
       - name: Build the man page and the html docs
         run: |
-          cd ${{ github.workspace }}/../build
+          cd ${{ github.workspace }}/../build/
           make -j man
           make -j html
 
