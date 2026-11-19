@@ -38,12 +38,16 @@ jobs:
           cd $GITHUB_WORKSPACE/../build/
           make -j man
           make -j html
+      
+      - name: Workaround actions/upload-artifact#176
+        run: |
+          echo "artifacts_build_path"=$(realpath $GITHUB_WORKSPACE/../build)" >> GITHUB_ENV
 
-      - name: Create artifacts with the build's src content
+      - name: Upload artifacts with the build's src content
         uses: actions/upload-artifact@v7
         with:
           name: aria2-build-artifact
-          path: ${{ github.workspace }}/../build/src/ 
+          path: ${{ env.artifacts_build_path }}/src/ 
 
 # jobs:
 #   build-project:
