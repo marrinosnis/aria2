@@ -5,107 +5,119 @@ on: push
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+
 jobs:
-  build-project:
-    name: Build Aria2
-
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
-        compiler: [g++]
-        crypto: [openssl]
-        # bittorrent: [enable-bt, disable-bt]
-        exclude:
-          - os: macos-14
-            crypto: gnutls
-          # - crypto: openssl
-          #   bittorrent: disable-bt
+  aria2-container-image:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/marrinosnis/aria2:latest
     
-    runs-on: ${{ matrix.os }}
-      
     steps:
-      - name: Checkout project
-        uses: actions/checkout@v7
-
-      # clang-15 \
-      - name: Linux setup - Install necessary libraries
-        if: runner.os == 'Linux'
+      - name: Check the cmake version of the docker image
         run: |
-          sudo apt-get update
-          sudo apt-get install \
-            g++-12 \
-            cmake \
-            libtool \
-            pkg-config \
-            libssl-dev \
-            libgnutls28-dev \
-            libc-ares-dev \
-            zlib1g-dev \
-            libsqlite3-dev \
-            libssh2-1-dev \
-            libcppunit-dev \
-            libunwind-dev \
-            libgoogle-perftools-dev \
-            python3-sphinx
+          cd ~/
+          cmake --version
+# jobs:
+#   build-project:
+#     name: Build Aria2
 
-      # - name: MacOS setup - Install necessary libraries
-      #   if: runner.os == 'macOS-14'
-      #   run: |
-      #     brew install cppunit gettext openssl libssh2 c-ares sqlite3 \
-      #     pkg-config libtool
+#     strategy:
+#       matrix:
+#         os: [ubuntu-22.04]
+#         compiler: [g++]
+#         crypto: [openssl]
+#         # bittorrent: [enable-bt, disable-bt]
+#         exclude:
+#           - os: macos-14
+#             crypto: gnutls
+#           # - crypto: openssl
+#           #   bittorrent: disable-bt
+    
+#     runs-on: ${{ matrix.os }}
       
-      # - name: Setup clang (Linux)
-      #   if: runner.os == 'Linux' && matrix.compiler == 'clang'
-      #   run: |
+#     steps:
+#       - name: Checkout project
+#         uses: actions/checkout@v7
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+#       # clang-15 \
+#       - name: Linux setup - Install necessary libraries
+#         if: runner.os == 'Linux'
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install \
+#             g++-12 \
+#             cmake \
+#             libtool \
+#             pkg-config \
+#             libssl-dev \
+#             libgnutls28-dev \
+#             libc-ares-dev \
+#             zlib1g-dev \
+#             libsqlite3-dev \
+#             libssh2-1-dev \
+#             libcppunit-dev \
+#             libunwind-dev \
+#             libgoogle-perftools-dev \
+#             python3-sphinx
 
-      - name: Verify Python version
-        run: |
-          python --version
-          python3 --version
-          python -m pip --version
-
-      - name: Install sphinx-rtd-theme
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install sphinx-rtd-theme
-
-      - name: Configure Project with CMake
-        uses: threeal/cmake-action@v2.1.0
-        with: 
-          source-dir: ${{ github.workspace }}  # results inside the aria2 directory
-          build-dir: ${{ github.workspace }}/../build/${{ matrix.crypto }}
-          options: |
-            ${{ matrix.crypto }}=true
-              bittorrent=true
-              libaria2=true
-              buildTests=false
-              websocket=true
-              BUILD_SHARED_LIBS=true
+#       # - name: MacOS setup - Install necessary libraries
+#       #   if: runner.os == 'macOS-14'
+#       #   run: |
+#       #     brew install cppunit gettext openssl libssh2 c-ares sqlite3 \
+#       #     pkg-config libtool
       
-      - name: Build manual pages and html pages
-        run: |
-          echo "First change to build directory"
-          cd ${{ github.workspace }}/../build/${{ matrix.crypto }}
+#       # - name: Setup clang (Linux)
+#       #   if: runner.os == 'Linux' && matrix.compiler == 'clang'
+#       #   run: |
+
+#       - name: Set up Python 3.12
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.12'
+
+#       - name: Verify Python version
+#         run: |
+#           python --version
+#           python3 --version
+#           python -m pip --version
+
+#       - name: Install sphinx-rtd-theme
+#         run: |
+#           python -m pip install --upgrade pip
+#           python -m pip install sphinx-rtd-theme
+
+#       - name: Configure Project with CMake
+#         uses: threeal/cmake-action@v2.1.0
+#         with: 
+#           source-dir: ${{ github.workspace }}  # results inside the aria2 directory
+#           build-dir: ${{ github.workspace }}/../build/${{ matrix.crypto }}
+#           options: |
+#             ${{ matrix.crypto }}=true
+#               bittorrent=true
+#               libaria2=true
+#               buildTests=false
+#               websocket=true
+#               BUILD_SHARED_LIBS=true
+      
+#       - name: Build manual pages and html pages
+#         run: |
+#           echo "First change to build directory"
+#           cd ${{ github.workspace }}/../build/${{ matrix.crypto }}
           
-          make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" man
-          make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" html
+#           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" man
+#           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" html
 
-      - name: Create artifact of the build directory
-        uses: actions/upload-artifact@v7
-        with:
-          name: aria2-build-artifact
-          path: /home/runner/work/aria2/build/openssl/
+#       - name: Create artifact of the build directory
+#         uses: actions/upload-artifact@v7
+#         with:
+#           name: aria2-build-artifact
+#           path: /home/runner/work/aria2/build/openssl/
 
-      - name: Build project with Makefile Generator
-        run: |
-          cd ${{ github.workspace }}/../build/${{ matrix.crypto }}
-          make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)"
+#       - name: Build project with Makefile Generator
+#         run: |
+#           cd ${{ github.workspace }}/../build/${{ matrix.crypto }}
+#           make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)"
 
-      - name: Print the content of the doc/manual-src/en/_build
-        run: |
-          ls -la ${{ github.workspace }}/../build/${{ matrix.crypto }}/doc/manual-src/en/_build/
+#       - name: Print the content of the doc/manual-src/en/_build
+#         run: |
+#           ls -la ${{ github.workspace }}/../build/${{ matrix.crypto }}/doc/manual-src/en/_build/
