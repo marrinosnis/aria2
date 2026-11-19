@@ -13,10 +13,45 @@ jobs:
       image: ghcr.io/marrinosnis/aria2:latest
     
     steps:
-      - name: Check the cmake version of the docker image
+      - name: Checkout aria2 project
+        uses: actions/checkout@7
+      
+
+      - name: Configure project with CMake build tool
+        uses: threeal/cmake-action@v2.1.0
+        with: 
+          source-dir: ${{ github.workspace }}  # results inside the aria2 directory
+          build-dir: ${{ github.workspace }}/../build/
+          options: |
+            openssl=true
+            bittorrent=true
+            libaria2=true
+            buildTests=false
+            websocket=true
+            BUILD_SHARED_LIBS=true
+
+      - name: Build aria2 project with Makefile Generator
         run: |
-          cd ~/
-          cmake --version
+          cd ${{ github.workspace }}/../build
+          make -j
+      
+      - name: Print the content of the build's directory
+        run: |
+          cd ${{ github.workspace }}/../build
+          ls -la
+
+      - name: Build the man page and the html docs
+        run: |
+          cd ${{ github.workspace }}/../build
+          make -j man
+          make -j html
+
+      - name: Create artifacts with the build's src content
+        uses: actions/upload-artifact@v7
+        with:
+          name: aria2-build-artifact
+          path: ${{ github.workspace }}/../build/src/ 
+
 # jobs:
 #   build-project:
 #     name: Build Aria2
