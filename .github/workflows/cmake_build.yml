@@ -14,7 +14,7 @@ jobs:
     
     steps:
       - name: Checkout aria2 project
-        uses: actions/checkout@6
+        uses: actions/checkout@v7
       
       - name: Configure project with CMake build tool
         uses: threeal/cmake-action@v2.1.0
