@@ -39,8 +39,7 @@ jobs:
       #     make -j man
       #     make -j html
       
-          # echo "artifacts_build_path=$(realpath $GITHUB_WORKSPACE/../build)" >> GITHUB_ENV
-          # echo "The value of GITHUB_WORKSPACE is $GITHUB_WORKSPACE"
+          
           # artifact_value=$GITHUB_WORKSPACE
           
           
@@ -48,11 +47,15 @@ jobs:
       
       - name: Workaround actions/upload-artifact#176
         run: |
+          echo "artifacts_build_path=$(realpath "$GITHUB_WORKSPACE/../build")" >> GITHUB_ENV
+          echo "The value of GITHUB_WORKSPACE is $GITHUB_WORKSPACE"
+          
           echo "art_path=$(cd "$GITHUB_WORKSPACE" && pwd)" >> "$GITHUB_ENV"
 
       - name: The value of the artifact_value
         run: |
           echo "The GITHUB_ENV art_path has the value of ${{ env.art_path }}"
+          echo "artifacts_build_path ${{ env.artifacts_build_path }}"
 
       # - name: Upload artifacts with the build's src content
       #   uses: actions/upload-artifact@v7
