@@ -9,7 +9,7 @@ jobs:
   aria2-container-image:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/marrinosnis/aria2:latest
+      image: ghcr.io/marrinosnis/aria2-ubuntu-docker-image-build:v1.0
     
     steps:
       - name: Checkout aria2 project
@@ -28,11 +28,13 @@ jobs:
             websocket=true
             BUILD_SHARED_LIBS=true
 
-      - name: Build the man page and the html docs
-        run: |
-          cd $GITHUB_WORKSPACE/../build/
-          make -j man
-          make -j html
+      # To build docs, activate the following step
+
+      # - name: Build the man page and the html docs
+      #   run: |
+      #     cd $GITHUB_WORKSPACE/../build/
+      #     make -j man
+      #     make -j html
 
       - name: Workaround gh issue actions/upload-artifact#176
         run: |
@@ -41,11 +43,5 @@ jobs:
       - name: Upload artifacts with the build's src content
         uses: actions/upload-artifact@v7
         with:
-          name: aria2-build-artifact-src
+          name: aria2-binary-libraries-artifact
           path: ${{ env.artifacts_build_path }}/src/*
-
-      - name: Upload artifacts with the build's content
-        uses: actions/upload-artifact@v7
-        with:
-          name: aria2-build-artifact-build
-          path: ${{ env.artifacts_build_path }}/*
