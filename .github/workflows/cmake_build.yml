@@ -68,10 +68,7 @@ jobs:
     needs: build
     if: ${{ inputs.build_docs }}
     uses: ./.github/workflow/build_docs.yml
-    with:
-      docs_path: ${{ env.artifacts_build_path}}
-
-
+    
   build_tests:
     needs: build
     if: ${{ inputs.build_tests }}
