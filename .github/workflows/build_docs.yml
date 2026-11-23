@@ -15,11 +15,11 @@ jobs:
       uses: actions/download-artifact@v8
       with:
         name: aria2-build-artifact
-        path: $GITHUB_WORKSPACE/docs
+        path: docs
 
     - name: Build docs from here
       run: |
-        cd $GITHUB_WORKSPACE/docs
+        cd docs
         make -j man
         make -j html
 
@@ -27,4 +27,4 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: aria2-build-docs
-        path: $GITHUB_WORKSPACE/docs
+        path: docs
