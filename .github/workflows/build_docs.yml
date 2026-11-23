@@ -18,8 +18,8 @@ jobs:
         path: docs
 
     - name: Build docs from here
+      working-directory: docs
       run: |
-        cd $GITHUB_WORKSPACE/docs
         make -j man
         make -j html
 
