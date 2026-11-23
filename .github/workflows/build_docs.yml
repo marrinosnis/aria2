@@ -5,7 +5,7 @@ on:
 
 jobs:
   build_docs:
-    runs-on:
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/marrinosnis/aria2-ubuntu-docker-image-build:v1.0
 
