@@ -1,12 +1,30 @@
-name: cmake_build
+name: aria2 workflow
 
-on: push
+on:
+  workflow_dispatch:
+    inputs:
+      cmake_options:
+        description: 'Enter the cmake options with the -Dvar=value structure'
+        required: true
+        type: string
+        default: '-Dopenssl=true -Dbittorrent=true -Dlibaria2=true -Dwebsocket=true -DBUILD_SHARED_LIBS=on'
 
+      build_tests:
+        description: 'Set to true to enable the build tests job'
+        required: true
+        type: boolean
+        default: false
+
+      build_docs:
+        description: 'Set to true to build the docs for the aria2'
+        required: false
+        type: boolean
+        default: false
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  aria2-container-image:
+  build:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/marrinosnis/aria2-ubuntu-docker-image-build:v1.0
@@ -28,14 +46,6 @@ jobs:
             websocket=true
             BUILD_SHARED_LIBS=true
 
-      # To build docs, activate the following step
-
-      # - name: Build the man page and the html docs
-      #   run: |
-      #     cd $GITHUB_WORKSPACE/../build/
-      #     make -j man
-      #     make -j html
-
       - name: Workaround gh issue actions/upload-artifact#176
         run: |
           echo "artifacts_build_path=$(realpath $GITHUB_WORKSPACE/../build)" >> $GITHUB_ENV
@@ -43,5 +53,28 @@ jobs:
       - name: Upload artifacts with the build's src content
         uses: actions/upload-artifact@v7
         with:
-          name: aria2-binary-libraries-artifact
-          path: ${{ env.artifacts_build_path }}/src/*
+          name: aria2-build-artifact
+          path: ${{ env.artifacts_build_path }}
+
+      # To build docs, activate the following step
+
+      # - name: Build the man page and the html docs
+      #   run: |
+      #     cd $GITHUB_WORKSPACE/../build/
+      #     make -j man
+      #     make -j html
+  
+  build_docs:
+    needs: build
+    if: ${{ inputs.build_docs }}
+    uses: ./.github/workflow/build_docs.yml
+    with:
+      docs_path: ${{ env.artifacts_build_path}}
+
+
+  build_tests:
+    needs: build
+    if: ${{ inputs.build_tests }}
+    uses: ./.github/workflows/build_tests.yml
+    with:
+      path: main/path/for/tests

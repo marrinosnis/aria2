@@ -1,0 +1,26 @@
+name: Build Docs
+
+on:
+  workflow_call:
+
+jobs:
+  build_docs:
+    runs-on:
+    container:
+      image: ghcr.io/marrinosnis/aria2-ubuntu-docker-image-build:v1.0
+
+
+    steps:
+    - name: Download artifact from the previous build
+      uses: actions/download-artifact@v8
+      with:
+        name: aria2-build-artifact
+        path: $GITHUB_WORKSPACE/docs
+
+    - name: Build docs from here
+      run: |
+        cd $GITHUB_WORKSPACE/docs
+        make -j man
+        make -j html
+
+

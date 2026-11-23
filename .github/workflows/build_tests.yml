@@ -1,0 +1,21 @@
+name: Build Tests
+
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: 'Enter the path to the build tests'
+        required: true
+        type: string
+
+
+jobs:
+  run_tests:
+    runs-on:
+    container:
+      image: ghcr.io/marrinosnis/aria2-ubuntu-docker-image-build:v1.0
+
+    steps:
+      - name: Run tests at path
+        run: |
+          echo "The path from the main workflow is: ${{ inputs.path }}"
