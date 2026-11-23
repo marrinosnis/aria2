@@ -23,4 +23,8 @@ jobs:
         make -j man
         make -j html
 
-
+    - name: Upload artifacts
+      uses: actions/upload-artifacts@v7
+      with:
+        name: aria2-build-docs
+        path: ${{ github.workspace }}/docs
