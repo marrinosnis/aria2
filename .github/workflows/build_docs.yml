@@ -19,7 +19,7 @@ jobs:
 
     - name: Build docs from here
       run: |
-        cd $GITHUB_WORKSPACE/../docs
+        cd $GITHUB_WORKSPACE/docs
         make -j man
         make -j html
 
