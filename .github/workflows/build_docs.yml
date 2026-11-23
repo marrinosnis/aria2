@@ -27,6 +27,8 @@ jobs:
     - name: Build docs from here
       working-directory: docs
       run: |
+        echo "Current directory: $(pwd)"
+        ls -la .
         make -j man
         make -j html
 
