@@ -67,7 +67,7 @@ jobs:
   build_docs:
     needs: build
     if: ${{ inputs.build_docs }}
-    uses: ./.github/workflow/build_docs.yml
+    uses: ./.github/workflows/build_docs.yml
     
   build_tests:
     needs: build
