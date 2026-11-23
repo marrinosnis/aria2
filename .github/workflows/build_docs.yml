@@ -17,6 +17,13 @@ jobs:
         name: aria2-build-artifact
         path: docs
 
+    - name: Inspect workspace
+      run: |
+        echo "Workspace: $GITHUB_WORKSPACE"
+        echo "Current directory: $(pwd)"
+        ls -la $GITHUB_WORKSPACE
+        ls -la $GITHUB_WORKSPACE/docs
+
     - name: Build docs from here
       working-directory: docs
       run: |
