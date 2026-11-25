@@ -46,7 +46,7 @@ jobs:
             websocket=true
             BUILD_SHARED_LIBS=true
 
-      - name: Workaround gh issue actions/upload-artifact#176
+      - name: Define build directory path to gh environment variable (workaround for gh issue actions/upload-artifact#176)
         run: |
           echo "artifacts_build_path=$(realpath $GITHUB_WORKSPACE/../build)" >> $GITHUB_ENV
 
@@ -55,14 +55,6 @@ jobs:
         with:
           name: aria2-build-artifact
           path: ${{ env.artifacts_build_path }}
-
-      # To build docs, activate the following step
-
-      # - name: Build the man page and the html docs
-      #   run: |
-      #     cd $GITHUB_WORKSPACE/../build/
-      #     make -j man
-      #     make -j html
   
   build_docs:
     needs: build

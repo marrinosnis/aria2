@@ -9,12 +9,11 @@ jobs:
     container:
       image: ghcr.io/marrinosnis/aria2-ubuntu-docker-image-build:v1.0
 
-
     steps:
     - name: Checkout project (again)
       uses: actions/checkout@v7
 
-    - name: Setting build directory Workaround gh issue actions/upload-artifact#176
+    - name: Setting build directory to github environment variable (workaround gh issue actions/upload-artifact#176)
       run: |
         echo "artifacts_build_path=$(realpath $GITHUB_WORKSPACE/../build)" >> $GITHUB_ENV
 
@@ -24,25 +23,15 @@ jobs:
         name: aria2-build-artifact
         path: ${{ env.artifacts_build_path }}
 
-        # cd $GITHUB_WORKSPACE/../build/
-    - name: Build docs from here
+    - name: Build docs
+      working-directory: ${{ env.artifacts_build_path }}
       run: |
-        cd ${{ env.artifacts_build_path }}
         echo "Current directory: $(pwd)"
-        ls -la .
         make -j man
         make -j html
 
-    - name: Upload artifacts with the build's src content
+    - name: Upload artifacts under doc/ directory
       uses: actions/upload-artifact@v7
       with:
-        name: aria2-build-artifact
-        path: ${{ env.artifacts_build_path }}
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v7
-      with:
-        name: aria2-build-docs
+        name: aria2-build-docs-artifact
         path: ${{ env.artifacts_build_path }}/doc/manual-src/en/_build/
-
-# $GITHUB_WORKSPACE/../build/doc/manual-src/en/_build/
