@@ -11,22 +11,18 @@ jobs:
 
 
     steps:
+    - name: Checkout project (again)
+      uses: actions/checkout@v7
+
     - name: Download artifact from the previous build
       uses: actions/download-artifact@v8
       with:
         name: aria2-build-artifact
-        path: docs
-
-    - name: Inspect workspace
-      run: |
-        echo "Workspace: $GITHUB_WORKSPACE"
-        echo "Current directory: $(pwd)"
-        ls -la $GITHUB_WORKSPACE
-        ls -la $GITHUB_WORKSPACE/docs
+        path: ${{ github.workspace }}/../build/
 
     - name: Build docs from here
-      working-directory: docs
       run: |
+        cd ${{ github.workspace }}/../build/
         echo "Current directory: $(pwd)"
         ls -la .
         make -j man
