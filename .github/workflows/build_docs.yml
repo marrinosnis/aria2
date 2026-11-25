@@ -22,7 +22,7 @@ jobs:
       uses: actions/download-artifact@v8
       with:
         name: aria2-build-artifact
-        path: ${{ env.artifacts_build_path }}/../
+        path: ${{ env.artifacts_build_path }}
 
         # cd $GITHUB_WORKSPACE/../build/
     - name: Build docs from here
