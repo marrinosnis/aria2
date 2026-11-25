@@ -22,8 +22,9 @@ jobs:
 
     - name: Build docs from here
       run: |
-        cd ${{ github.workspace }}/../build/
         echo "Current directory: $(pwd)"
+        ls -la .
+        cd ${{ github.workspace }}/../build/
         ls -la .
         make -j man
         make -j html
