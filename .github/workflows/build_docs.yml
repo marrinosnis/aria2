@@ -14,25 +14,35 @@ jobs:
     - name: Checkout project (again)
       uses: actions/checkout@v7
 
+    - name: Setting build directory Workaround gh issue actions/upload-artifact#176
+      run: |
+        echo "artifacts_build_path=$(realpath $GITHUB_WORKSPACE/../build)" >> $GITHUB_ENV
+
     - name: Download artifact from the previous build
       uses: actions/download-artifact@v8
       with:
         name: aria2-build-artifact
+        path: ${{ env.artifacts_build_path }}/../
 
         # cd $GITHUB_WORKSPACE/../build/
     - name: Build docs from here
       run: |
+        cd ${{ env.artifacts_build_path }}
         echo "Current directory: $(pwd)"
-        echo "GithubWorkspace $GITHUB_WORKSPACE value"
-        ls -la .
         ls -la .
         make -j man
         make -j html
+
+    - name: Upload artifacts with the build's src content
+      uses: actions/upload-artifact@v7
+      with:
+        name: aria2-build-artifact
+        path: ${{ env.artifacts_build_path }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v7
       with:
         name: aria2-build-docs
-        path: $GITHUB_WORKSPACE/doc/manual-src/en/_build/
+        path: ${{ env.artifacts_build_path }}/doc/manual-src/en/_build/
 
 # $GITHUB_WORKSPACE/../build/doc/manual-src/en/_build/
