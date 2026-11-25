@@ -34,4 +34,4 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: aria2-build-docs
-        path: docs
+        path: $GITHUB_WORKSPACE/../build/doc/manual-src/en/_build/
