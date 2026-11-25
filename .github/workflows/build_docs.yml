@@ -18,14 +18,13 @@ jobs:
       uses: actions/download-artifact@v8
       with:
         name: aria2-build-artifact
-        path: ${{ github.workspace }}/../build/
 
+        # cd $GITHUB_WORKSPACE/../build/
     - name: Build docs from here
       run: |
         echo "Current directory: $(pwd)"
         echo "GithubWorkspace $GITHUB_WORKSPACE value"
         ls -la .
-        cd $GITHUB_WORKSPACE/../build/
         ls -la .
         make -j man
         make -j html
@@ -34,4 +33,6 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: aria2-build-docs
-        path: $GITHUB_WORKSPACE/../build/doc/manual-src/en/_build/
+        path: $GITHUB_WORKSPACE/doc/manual-src/en/_build/
+
+# $GITHUB_WORKSPACE/../build/doc/manual-src/en/_build/

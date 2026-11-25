@@ -48,13 +48,7 @@ jobs:
 
       - name: Workaround gh issue actions/upload-artifact#176
         run: |
-          echo "artifacts_build_path=${{ github.workspace }}/../build/" >> "$GITHUB_ENV"
-
-      - name: Value of env.artifacts_build_path
-        run: |
-          echo ${{ env.artifacts_build_path }}
-          cd ${{ env.artifacts_build_path }}
-          ls -la
+          echo "artifacts_build_path=$(realpath $GITHUB_WORKSPACE/../build)" >> $GITHUB_ENV
 
       - name: Upload artifacts with the build's src content
         uses: actions/upload-artifact@v7
