@@ -36,8 +36,8 @@ jobs:
       - name: Configure project with CMake build tool
         uses: threeal/cmake-action@v2.1.0
         with: 
-          source-dir: ${{ github.workspace }}
-          build-dir: ${{ github.workspace }}/../build/
+          source-dir: $GITHUB_WORKSPACE
+          build-dir: $GITHUB_WORKSPACE/../build/
           options: |
             openssl=true
             bittorrent=true
