@@ -53,6 +53,8 @@ jobs:
       - name: Value of env.artifacts_build_path
         run: |
           echo ${{ env.artifacts_build_path }}
+          cd ${{ env.artifacts_build_path }}
+          ls -la
 
       - name: Upload artifacts with the build's src content
         uses: actions/upload-artifact@v7
