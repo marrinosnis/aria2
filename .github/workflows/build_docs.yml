@@ -13,7 +13,7 @@ jobs:
     - name: Checkout project (again)
       uses: actions/checkout@v7
 
-    - name: Setting build directory to github environment variable (workaround gh issue actions/upload-artifact#176)
+    - name: Define build directory path to gh environment variable (workaround for gh issue actions/upload-artifact#176)
       run: |
         echo "artifacts_build_path=$(realpath $GITHUB_WORKSPACE/../build)" >> $GITHUB_ENV
 
