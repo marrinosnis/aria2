@@ -40,7 +40,7 @@ jobs:
           source-dir: ${{ github.workspace }}
           build-dir: ${{ github.workspace }}/../build/
           options: |
-            ${{ options.cmake_options }}
+            ${{ inputs.cmake_options }}
 
       - name: Define build directory path to gh environment variable (workaround for gh issue actions/upload-artifact#176)
         run: |
