@@ -58,7 +58,7 @@ jobs:
       #     path: ${{ env.artifacts_build_path }}
       - name: Check the content of the cmake_builds string
         run: |
-          echo "The value is ${inputs.cmake_options} check here"
+          echo "The value is ${{ inputs.cmake_options }} check here"
   
   build_docs:
     needs: build
