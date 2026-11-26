@@ -34,28 +34,23 @@ jobs:
       - name: Checkout aria2 project
         uses: actions/checkout@v7
       
-      # - name: Configure project with CMake build tool
-      #   uses: threeal/cmake-action@v2.1.0
-      #   with: 
-      #     source-dir: ${{ github.workspace }}
-      #     build-dir: ${{ github.workspace }}/../build/
-      #     options: |
-      #       openssl=true
-      #       bittorrent=true
-      #       libaria2=true
-      #       buildTests=false
-      #       websocket=true
-      #       BUILD_SHARED_LIBS=true
+      - name: Configure project with CMake build tool
+        uses: threeal/cmake-action@v2.1.0
+        with: 
+          source-dir: ${{ github.workspace }}
+          build-dir: ${{ github.workspace }}/../build/
+          options: |
+            ${{ options.cmake_options }}
 
-      # - name: Define build directory path to gh environment variable (workaround for gh issue actions/upload-artifact#176)
-      #   run: |
-      #     echo "artifacts_build_path=$(realpath $GITHUB_WORKSPACE/../build)" >> $GITHUB_ENV
+      - name: Define build directory path to gh environment variable (workaround for gh issue actions/upload-artifact#176)
+        run: |
+          echo "artifacts_build_path=$(realpath $GITHUB_WORKSPACE/../build)" >> $GITHUB_ENV
 
-      # - name: Upload artifacts with the build's src content
-      #   uses: actions/upload-artifact@v7
-      #   with:
-      #     name: aria2-build-artifact
-      #     path: ${{ env.artifacts_build_path }}
+      - name: Upload artifacts with the build's src content
+        uses: actions/upload-artifact@v7
+        with:
+          name: aria2-build-artifact
+          path: ${{ env.artifacts_build_path }}
       - name: Check the content of the cmake_builds string
         run: |
           echo "The value is ${{ inputs.cmake_options }} check here"
