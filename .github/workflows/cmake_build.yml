@@ -7,7 +7,7 @@ on:
         description: 'Enter the cmake options with the -Dvar=value structure'
         required: true
         type: string
-        default: '-Dopenssl=true -Dbittorrent=true -Dlibaria2=true -Dwebsocket=true -DBUILD_SHARED_LIBS=on'
+        default: 'openssl=true bittorrent=true libaria2=true websocket=true BUILD_SHARED_LIBS=on'
 
       build_tests:
         description: 'Set to true to enable the build tests job'
